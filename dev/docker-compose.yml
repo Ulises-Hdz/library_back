@@ -1,0 +1,31 @@
+services:
+
+  library:
+    container_name: library
+    build: 
+      context: ../
+      dockerfile: dev.Dockerfile
+    restart: always
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/database
+    depends_on:
+      - mongo
+    volumes:
+      - ../src/:/usr/src/app/src
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+
+  mongo:
+    environment:
+      - "TZ=America/Mexico_City"
+    container_name: mongo
+    image: mongo:5.0.0-rc3-focal
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ../data/mongo/data:/data/db
