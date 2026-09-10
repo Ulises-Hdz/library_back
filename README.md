@@ -1,99 +1,141 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Library Back API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API Backend para el sistema de biblioteca desarrollada con **NestJS** y **MongoDB (Mongoose)**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📋 Requisitos Previos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Node.js](https://nodejs.org/) (versión 20 o superior recomendada)
+- [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/)
+- npm / yarn / pnpm
 
-## Project setup
+---
+
+## ⚙️ Configuración Inicial
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd library
+   ```
+
+2. **Configurar las variables de entorno:**
+   Copia el archivo de plantilla `.env.template` a `.env`:
+   ```bash
+   cp .env.template .env
+   ```
+
+   Variables contenidas en `.env`:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/database
+   ```
+
+---
+
+## 🚀 Cómo Levantar la API
+
+Tienes dos alternativas para ejecutar el proyecto según tus necesidades de desarrollo:
+
+### Opción 1: Con Docker Compose (Recomendada)
+Esta opción levanta automáticamente tanto la **base de datos (MongoDB)** como el **contenedor de la API** en modo desarrollo con recarga en caliente (*hot-reload*).
+
+1. **Iniciar los contenedores:**
+   ```bash
+   docker compose -f dev/docker-compose.yml up -d
+   ```
+
+2. **Ver los logs en tiempo real:**
+   ```bash
+   docker logs -f library
+   ```
+
+3. **Reconstruir la imagen (necesario si instalas nuevos paquetes npm):**
+   ```bash
+   docker compose -f dev/docker-compose.yml up -d --build
+   ```
+
+4. **Detener los servicios:**
+   ```bash
+   docker compose -f dev/docker-compose.yml down
+   ```
+
+---
+
+### Opción 2: Ejecución Local (Solo BD en Docker)
+Si prefieres correr `npm run start:dev` directamente en tu máquina física y usar Docker solo para MongoDB:
+
+1. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
+
+2. **Levantar únicamente el contenedor de MongoDB:**
+   ```bash
+   docker compose -f dev/docker-compose.yml up mongo -d
+   ```
+
+3. **Verificar tu archivo `.env`:**
+   Asegúrate de que `MONGO_URI` apunte a `localhost`:
+   ```env
+   PORT=3000
+   MONGO_URI=mongodb://localhost:27017/database
+   ```
+
+4. **Iniciar la aplicación en modo desarrollo:**
+   ```bash
+   npm run start:dev
+   ```
+
+---
+
+## 🌐 Endpoints y Rutas
+
+- **URL base:** `http://localhost:3000/api`
+- Todas las rutas están bajo el prefijo global `/api`.
+- Se cuenta con validación global (`ValidationPipe`) que sanitiza automáticamente payloads entrantes (`whitelist` y transformación automática de tipos).
+
+---
+
+## 🛠️ Scripts Disponibles
 
 ```bash
-$ npm install
+# Desarrollo con recarga automática
+npm run start:dev
+
+# Compilar para producción
+npm run build
+
+# Iniciar en producción
+npm run start:prod
+
+# Ejecutar linter con auto-fix
+npm run lint
+
+# Formatear código con Prettier
+npm run format
+
+# Ejecutar pruebas unitarias
+npm run test
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 📁 Estructura del Proyecto
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```text
+src/
+├── common/             # Elementos transversales compartidos
+│   ├── dto/            # DTOs globales (ej. PaginationDto)
+│   ├── filters/        # Filtros de excepciones globales
+│   ├── guards/         # Guards de seguridad y autenticación
+│   ├── interceptors/   # Interceptores de respuesta y logging
+│   └── pipes/          # Pipes personalizados (ej. ParseMongoIdPipe)
+├── config/             # Configuración del entorno y validación Joi
+│   ├── env.config.ts
+│   └── joi.validation.ts
+├── modules/            # Módulos de dominio de la biblioteca (books, users, etc.)
+├── app.module.ts       # Módulo raíz
+└── main.ts             # Punto de entrada y configuración global de la app
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# library_back
