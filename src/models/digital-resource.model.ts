@@ -6,7 +6,7 @@ export enum DigitalFormat {
   EPUB = 'EPUB'
 }
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class DigitalResource extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Book', required: true, unique: true })
   book_id: Types.ObjectId;

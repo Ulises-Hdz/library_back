@@ -8,7 +8,7 @@ export enum ItemStatus {
   IN_REPAIR = 'IN_REPAIR',
 }
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class PhysicalItem extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Book', required: true })
   book_id: Types.ObjectId;

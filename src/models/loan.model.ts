@@ -7,7 +7,7 @@ export enum LoanStatus {
   OVERDUE = 'OVERDUE'
 }
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class Loan extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;

@@ -15,8 +15,7 @@ import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
 export class BookService {
   constructor(
     @InjectModel('Book') private readonly booksModel: Model<Book>,
-    @InjectModel('PhysicalItem')
-    private readonly physicalItemModel: Model<PhysicalItem>,
+    @InjectModel('PhysicalItem') private readonly physicalItemModel: Model<PhysicalItem>,
   ) {}
 
   async create(createBookDto: CreateBookDto) {
@@ -39,7 +38,6 @@ export class BookService {
       .find(filter)
       .skip(offset)
       .limit(limit)
-      .select('-__v');
   }
 
   private regex(text: string) {
@@ -47,15 +45,20 @@ export class BookService {
   }
 
   async findOne(id: string) { 
-    const book = await this.booksModel.findById(id);
-
-    if (!book) {
-      throw new NotFoundException(
-        `Book with id "${id}" not found.`,
-      );
+    try {
+      const book = await this.booksModel.findById(id);
+  
+      if (!book) {
+        throw new NotFoundException(
+          `Book with id "${id}" not found.`,
+        );
+      }
+  
+      return book;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      this.handleDBError(error);
     }
-
-    return book;
   }
 
   async update(id: string, updateBookDto: UpdateBookDto) {

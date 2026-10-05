@@ -11,7 +11,7 @@ export enum UserStatus {
   BLOCKED = 'BLOCKED' 
 }
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, versionKey: false })
 export class User extends Document {
   @Prop({ required: true, unique: true })
   student_id: string; 
