@@ -1,0 +1,330 @@
+openapi: 3.0.3
+info:
+  title: Library API
+  version: 1.0.0
+  description: |
+    Library API (books, digital resources and physical inventory).
+    All routes use the global `/api` prefix.
+    Authentication and roles (Admin / Student) are not implemented yet;
+    the role shown on each endpoint is the intended one.
+servers:
+  - url: http://localhost:3000/api
+tags:
+  - name: Books
+  - name: Digital resources
+  - name: Physical items
+
+paths:
+  /books:
+    post:
+      tags: [Books]
+      summary: Register a book (Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateBook' }
+      responses:
+        '201':
+          description: Book creado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+    get:
+      tags: [Books]
+      summary: Book search engine (Authenticated)
+      description: Filters use partial, case-insensitive matching.
+      parameters:
+        - { name: title, in: query, schema: { type: string } }
+        - { name: author, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, default: 10 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Book' }
+  /books/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
+    get:
+      tags: [Books]
+      summary: Book details (Authenticated)
+      responses:
+        '200':
+          description: Book
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Books]
+      summary: Update a book (Admin)
+      description: All fields are optional. Returns the updated book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateBook' }
+      responses:
+        '200':
+          description: Book updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Books]
+      summary: Delete a book (Admin)
+      description: Responds 409 if any physical item of the book is on loan.
+      responses:
+        '200':
+          description: Book eliminado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Message' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /digital-resources:
+    post:
+      tags: [Digital resources]
+      summary: Upload a PDF/EPUB and link it to a book (Admin)
+      description: |
+        Maximum 100 MB. Only `.pdf` and `.epub`; the content is also validated.
+        A book can only have one digital resource.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, book_id]
+              properties:
+                file: { type: string, format: binary }
+                book_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+                onlineReadOnly:
+                  type: boolean
+                  default: true
+                  description: If true the file is shown inline; if false it is downloaded.
+      responses:
+        '201':
+          description: Resource created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DigitalResource' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /digital-resources/book/{bookId}:
+    get:
+      tags: [Digital resources]
+      summary: Get the digital file of a book (Authenticated)
+      parameters:
+        - { name: bookId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: File (inline or attachment depending on `onlineReadOnly`)
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+            application/epub+zip:
+              schema: { type: string, format: binary }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /digital-resources/{id}:
+    delete:
+      tags: [Digital resources]
+      summary: Delete a digital resource and its file (Admin)
+      parameters:
+        - { $ref: '#/components/parameters/MongoId' }
+      responses:
+        '200':
+          description: Resource deleted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Message' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /physical-items:
+    post:
+      tags: [Physical items]
+      summary: Register a physical copy (Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [book_id, barcode]
+              properties:
+                book_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+                barcode: { type: string, example: LIB-000123 }
+                shelfLocation: { type: string, example: A-3 }
+      responses:
+        '201':
+          description: Physical item created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PhysicalItem' }
+        '400':
+          description: Invalid data or duplicated barcode
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /physical-items/book/{bookId}:
+    get:
+      tags: [Physical items]
+      summary: Copy availability of a book (Authenticated)
+      parameters:
+        - { name: bookId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Physical item count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  book_id: { type: string }
+                  total: { type: integer, example: 5 }
+                  available: { type: integer, example: 3 }
+                  byStatus:
+                    type: object
+                    example:
+                      AVAILABLE: 3
+                      LOANED: 1
+                      LOST: 0
+                      IN_REPAIR: 1
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /physical-items/{id}/status:
+    patch:
+      tags: [Physical items]
+      summary: Change the status of a physical item (Admin)
+      description: |
+        `LOANED` cannot be assigned manually (it is managed by loans).
+        Responds 409 if the item is on loan.
+      parameters:
+        - { $ref: '#/components/parameters/MongoId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [AVAILABLE, LOST, IN_REPAIR]
+      responses:
+        '200':
+          description: Physical item updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PhysicalItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+components:
+  parameters:
+    MongoId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+  responses:
+    BadRequest:
+      description: Invalid data or id
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: Conflict with the current state of the resource
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      properties:
+        statusCode: { type: integer }
+        message: {}
+        error: { type: string }
+    Message:
+      type: object
+      properties:
+        message: { type: string }
+    CreateBook:
+      type: object
+      required: [isbn, title, author, publisher, categories]
+      properties:
+        isbn: { type: string, example: '9780132350884' }
+        title: { type: string, example: Clean Code }
+        author: { type: string, example: Robert C. Martin }
+        publisher: { type: string, example: Prentice Hall }
+        publicationYear: { type: integer, example: 2008 }
+        categories:
+          type: array
+          items: { type: string }
+          example: [Programming]
+        coverUrl: { type: string, format: uri }
+        description: { type: string }
+    UpdateBook:
+      type: object
+      description: Same as CreateBook, but all fields are optional.
+      properties:
+        isbn: { type: string }
+        title: { type: string }
+        author: { type: string }
+        publisher: { type: string }
+        publicationYear: { type: integer }
+        categories:
+          type: array
+          items: { type: string }
+        coverUrl: { type: string, format: uri }
+        description: { type: string }
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/CreateBook'
+        - type: object
+          properties:
+            _id: { type: string }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    DigitalResource:
+      type: object
+      properties:
+        _id: { type: string }
+        book_id: { type: string }
+        fileUrl: { type: string, description: Internal name of the stored file }
+        format: { type: string, enum: [PDF, EPUB] }
+        sizeMegabytes: { type: number }
+        onlineReadOnly: { type: boolean }
+    PhysicalItem:
+      type: object
+      properties:
+        _id: { type: string }
+        book_id: { type: string }
+        barcode: { type: string }
+        shelfLocation: { type: string }
+        status:
+          type: string
+          enum: [AVAILABLE, LOANED, LOST, IN_REPAIR]
