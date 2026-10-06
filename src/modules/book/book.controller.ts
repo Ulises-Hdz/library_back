@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto, SearchBookDto, UpdateBookDto } from 'src/common/dto/book.dto';
@@ -40,7 +41,7 @@ export class BookController {
 
   // PUT /api/books/:id
   // Admin
-  @Put(':id')
+  @Patch(':id')
   update(
     @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateBookDto: UpdateBookDto,

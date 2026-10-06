@@ -63,7 +63,7 @@ paths:
               schema: { $ref: '#/components/schemas/Book' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }
-    put:
+    patch:
       tags: [Books]
       summary: Update a book (Admin)
       description: All fields are optional. Returns the updated book.

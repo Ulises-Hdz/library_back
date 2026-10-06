@@ -28,16 +28,21 @@ export class BookService {
   }
 
   async findAll(searchDto: SearchBookDto) {
-    const { limit = 10, offset = 0, title, author, category } = searchDto;
-    const filter: Record<string, unknown> = {};
-    if (title) filter.title = this.regex(title);
-    if (author) filter.author = this.regex(author);
-    if (category) filter.categories = this.regex(category);
-
-    return this.booksModel
-      .find(filter)
-      .skip(offset)
-      .limit(limit)
+    try {
+      const { limit = 10, offset = 0, title, author, category } = searchDto;
+      const filter: Record<string, unknown> = {};
+      if (title) filter.title = this.regex(title);
+      if (author) filter.author = this.regex(author);
+      if (category) filter.categories = this.regex(category);
+  
+      return this.booksModel
+        .find(filter)
+        .skip(offset)
+        .limit(limit)
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      this.handleDBError(error);
+    }
   }
 
   private regex(text: string) {
@@ -79,18 +84,23 @@ export class BookService {
   }
 
   async remove(id: string) {
-    const book = await this.findOne(id);
-    const loaned = await this.physicalItemModel.countDocuments({
-      book_id: book._id,
-      status: ItemStatus.LOANED,
-    });
-    if (loaned > 0) {
-      throw new ConflictException(
-        'The book cannot be deleted: it has active loans.',
-      );
+    try {
+      const book = await this.findOne(id);
+      const loaned = await this.physicalItemModel.countDocuments({
+        book_id: book._id,
+        status: ItemStatus.LOANED,
+      });
+      if (loaned > 0) {
+        throw new ConflictException(
+          'The book cannot be deleted: it has active loans.',
+        );
+      }
+      await book.deleteOne();
+      return { message: `Book "${book.title}" deleted successfully.` };
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      this.handleDBError(error);
     }
-    await book.deleteOne();
-    return { message: `Book "${book.title}" deleted successfully.` };
   }
 
   private handleDBError(error: any): never {

@@ -1,0 +1,760 @@
+[{
+  "_id": {
+    "$oid": "6ac04434b3e79f540e2dbab5"
+  },
+  "isbn": "978-0-06-112008-4",
+  "title": "To Kill a Mockingbird",
+  "author": "Harper Lee",
+  "publisher": "HarperCollins",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:28.144Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:28.144Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04435b3e79f540e2dbab6"
+  },
+  "isbn": "978-0-7432-7356-5",
+  "title": "1984",
+  "author": "George Orwell",
+  "publisher": "Secker & Warburg",
+  "categories": [
+    "Dystopia",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:29.497Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:29.497Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04436b3e79f540e2dbab7"
+  },
+  "isbn": "978-0-7432-7357-2",
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "publisher": "Scribner",
+  "categories": [
+    "Classic",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:30.117Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:30.117Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04436b3e79f540e2dbab8"
+  },
+  "isbn": "978-0-14-028329-7",
+  "title": "Of Mice and Men",
+  "author": "John Steinbeck",
+  "publisher": "Penguin Books",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:30.656Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:30.656Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04436b3e79f540e2dbab9"
+  },
+  "isbn": "978-0-06-093546-9",
+  "title": "Brave New World",
+  "author": "Aldous Huxley",
+  "publisher": "Chatto & Windus",
+  "categories": [
+    "Dystopia",
+    "Science Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:30.857Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:30.857Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04437b3e79f540e2dbaba"
+  },
+  "isbn": "978-0-14-303943-3",
+  "title": "Fahrenheit 451",
+  "author": "Ray Bradbury",
+  "publisher": "Ballantine Books",
+  "categories": [
+    "Dystopia",
+    "Science Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:31.065Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:31.065Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04437b3e79f540e2dbabb"
+  },
+  "isbn": "978-0-7432-7358-9",
+  "title": "The Catcher in the Rye",
+  "author": "J.D. Salinger",
+  "publisher": "Little, Brown",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:31.354Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:31.354Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04437b3e79f540e2dbabc"
+  },
+  "isbn": "978-0-14-028330-3",
+  "title": "Lord of the Flies",
+  "author": "William Golding",
+  "publisher": "Faber and Faber",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:31.474Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:31.474Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04437b3e79f540e2dbabd"
+  },
+  "isbn": "978-0-06-112009-1",
+  "title": "Animal Farm",
+  "author": "George Orwell",
+  "publisher": "Secker & Warburg",
+  "categories": [
+    "Satire",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:31.680Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:31.680Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbabe"
+  },
+  "isbn": "978-0-7432-7359-6",
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien",
+  "publisher": "Allen & Unwin",
+  "categories": [
+    "Fantasy",
+    "Adventure"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.033Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.033Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbabf"
+  },
+  "isbn": "978-0-618-00222-3",
+  "title": "The Lord of the Rings",
+  "author": "J.R.R. Tolkien",
+  "publisher": "Allen & Unwin",
+  "categories": [
+    "Fantasy",
+    "Epic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.253Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.253Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbac0"
+  },
+  "isbn": "978-0-7432-7360-2",
+  "title": "Harry Potter and the Sorcerers Stone",
+  "author": "J.K. Rowling",
+  "publisher": "Bloomsbury",
+  "categories": [
+    "Fantasy",
+    "Young Adult"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.465Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.465Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbac1"
+  },
+  "isbn": "978-0-439-06486-6",
+  "title": "Harry Potter and the Chamber of Secrets",
+  "author": "J.K. Rowling",
+  "publisher": "Bloomsbury",
+  "categories": [
+    "Fantasy",
+    "Young Adult"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.548Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.548Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbac2"
+  },
+  "isbn": "978-0-7432-7361-9",
+  "title": "The Alchemist",
+  "author": "Paulo Coelho",
+  "publisher": "HarperOne",
+  "categories": [
+    "Fiction",
+    "Philosophy"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.627Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.627Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbac3"
+  },
+  "isbn": "978-0-14-028331-0",
+  "title": "Don Quixote",
+  "author": "Miguel de Cervantes",
+  "publisher": "Francisco de Robles",
+  "categories": [
+    "Classic",
+    "Adventure"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:32.948Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:32.948Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04438b3e79f540e2dbac4"
+  },
+  "isbn": "978-0-7432-7362-6",
+  "title": "One Hundred Years of Solitude",
+  "author": "Gabriel Garcia Marquez",
+  "publisher": "Harper & Row",
+  "categories": [
+    "Magic Realism",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:33.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:33.000Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04439b3e79f540e2dbac5"
+  },
+  "isbn": "978-0-06-112010-7",
+  "title": "The Old Man and the Sea",
+  "author": "Ernest Hemingway",
+  "publisher": "Scribner",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:33.075Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:33.075Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04439b3e79f540e2dbac6"
+  },
+  "isbn": "978-0-7432-7363-3",
+  "title": "Crime and Punishment",
+  "author": "Fyodor Dostoevsky",
+  "publisher": "The Russian Messenger",
+  "categories": [
+    "Classic",
+    "Psychological Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:33.368Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:33.368Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04439b3e79f540e2dbac7"
+  },
+  "isbn": "978-0-14-028332-7",
+  "title": "War and Peace",
+  "author": "Leo Tolstoy",
+  "publisher": "The Russian Messenger",
+  "categories": [
+    "Historical Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:33.480Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:33.480Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04439b3e79f540e2dbac8"
+  },
+  "isbn": "978-0-7432-7364-0",
+  "title": "The Divine Comedy",
+  "author": "Dante Alighieri",
+  "publisher": "Self-published",
+  "categories": [
+    "Poetry",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:54:33.676Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:54:33.676Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac0448fb3e79f540e2dbac9"
+  },
+  "isbn": "978-0-06-112008-4",
+  "title": "To Kill a Mockingbird",
+  "author": "Harper Lee",
+  "publisher": "HarperCollins",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:55:59.491Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:55:59.491Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbaca"
+  },
+  "isbn": "978-0-7432-7356-5",
+  "title": "1984",
+  "author": "George Orwell",
+  "publisher": "Secker & Warburg",
+  "categories": [
+    "Dystopia",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.003Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.003Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbacb"
+  },
+  "isbn": "978-0-7432-7357-2",
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "publisher": "Scribner",
+  "categories": [
+    "Classic",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.075Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.075Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbacc"
+  },
+  "isbn": "978-0-14-028329-7",
+  "title": "Of Mice and Men",
+  "author": "John Steinbeck",
+  "publisher": "Penguin Books",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.204Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.204Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbacd"
+  },
+  "isbn": "978-0-06-093546-9",
+  "title": "Brave New World",
+  "author": "Aldous Huxley",
+  "publisher": "Chatto & Windus",
+  "categories": [
+    "Dystopia",
+    "Science Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.670Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.670Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbace"
+  },
+  "isbn": "978-0-14-303943-3",
+  "title": "Fahrenheit 451",
+  "author": "Ray Bradbury",
+  "publisher": "Ballantine Books",
+  "categories": [
+    "Dystopia",
+    "Science Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.783Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.783Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04490b3e79f540e2dbacf"
+  },
+  "isbn": "978-0-7432-7358-9",
+  "title": "The Catcher in the Rye",
+  "author": "J.D. Salinger",
+  "publisher": "Little, Brown",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:00.854Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:00.854Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad0"
+  },
+  "isbn": "978-0-14-028330-3",
+  "title": "Lord of the Flies",
+  "author": "William Golding",
+  "publisher": "Faber and Faber",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.033Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.033Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad1"
+  },
+  "isbn": "978-0-06-112009-1",
+  "title": "Animal Farm",
+  "author": "George Orwell",
+  "publisher": "Secker & Warburg",
+  "categories": [
+    "Satire",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.226Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.226Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad2"
+  },
+  "isbn": "978-0-7432-7359-6",
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien",
+  "publisher": "Allen & Unwin",
+  "categories": [
+    "Fantasy",
+    "Adventure"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.389Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.389Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad3"
+  },
+  "isbn": "978-0-618-00222-3",
+  "title": "The Lord of the Rings",
+  "author": "J.R.R. Tolkien",
+  "publisher": "Allen & Unwin",
+  "categories": [
+    "Fantasy",
+    "Epic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.472Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad4"
+  },
+  "isbn": "978-0-7432-7360-2",
+  "title": "Harry Potter and the Sorcerers Stone",
+  "author": "J.K. Rowling",
+  "publisher": "Bloomsbury",
+  "categories": [
+    "Fantasy",
+    "Young Adult"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.675Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.675Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad5"
+  },
+  "isbn": "978-0-439-06486-6",
+  "title": "Harry Potter and the Chamber of Secrets",
+  "author": "J.K. Rowling",
+  "publisher": "Bloomsbury",
+  "categories": [
+    "Fantasy",
+    "Young Adult"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.792Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.792Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04491b3e79f540e2dbad6"
+  },
+  "isbn": "978-0-7432-7361-9",
+  "title": "The Alchemist",
+  "author": "Paulo Coelho",
+  "publisher": "HarperOne",
+  "categories": [
+    "Fiction",
+    "Philosophy"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:01.852Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:01.852Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbad7"
+  },
+  "isbn": "978-0-14-028331-0",
+  "title": "Don Quixote",
+  "author": "Miguel de Cervantes",
+  "publisher": "Francisco de Robles",
+  "categories": [
+    "Classic",
+    "Adventure"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.018Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.018Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbad8"
+  },
+  "isbn": "978-0-7432-7362-6",
+  "title": "One Hundred Years of Solitude",
+  "author": "Gabriel Garcia Marquez",
+  "publisher": "Harper & Row",
+  "categories": [
+    "Magic Realism",
+    "Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.213Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.213Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbad9"
+  },
+  "isbn": "978-0-06-112010-7",
+  "title": "The Old Man and the Sea",
+  "author": "Ernest Hemingway",
+  "publisher": "Scribner",
+  "categories": [
+    "Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.265Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.265Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbada"
+  },
+  "isbn": "978-0-7432-7363-3",
+  "title": "Crime and Punishment",
+  "author": "Fyodor Dostoevsky",
+  "publisher": "The Russian Messenger",
+  "categories": [
+    "Classic",
+    "Psychological Fiction"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.462Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.462Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbadb"
+  },
+  "isbn": "978-0-14-028332-7",
+  "title": "War and Peace",
+  "author": "Leo Tolstoy",
+  "publisher": "The Russian Messenger",
+  "categories": [
+    "Historical Fiction",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.636Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.636Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6ac04492b3e79f540e2dbadc"
+  },
+  "isbn": "978-0-7432-7364-0",
+  "title": "The Divine Comedy",
+  "author": "Dante Alighieri",
+  "publisher": "Self-published",
+  "categories": [
+    "Poetry",
+    "Classic"
+  ],
+  "createdAt": {
+    "$date": "2026-10-02T23:56:02.836Z"
+  },
+  "updatedAt": {
+    "$date": "2026-10-02T23:56:02.836Z"
+  }
+}]
