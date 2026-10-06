@@ -4,9 +4,6 @@ import { UserRole } from 'src/models/user.model';
 
 
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
-  student_id: string;
 
   @IsString()
   @IsNotEmpty()
