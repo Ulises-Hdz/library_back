@@ -13,23 +13,15 @@ export enum UserStatus {
 
 @Schema({ timestamps: true, versionKey: false })
 export class User extends Document {
-  @Prop({ required: true, unique: true })
-  student_id: string; 
 
   @Prop({ required: true })
-  first_name: string;
-
-  @Prop({ required: true })
-  last_name: string;
+  full_name: string;
 
   @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
-  passwordHash: string;
-
-  @Prop({ required: true })
-  control_number: string;
+  password: string;
 
   @Prop({ type: String, enum: UserRole, default: UserRole.STUDENT })
   role: UserRole;

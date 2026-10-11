@@ -5,16 +5,262 @@ info:
   description: |
     Library API (books, digital resources and physical inventory).
     All routes use the global `/api` prefix.
-    Authentication and roles (Admin / Student) are not implemented yet;
-    the role shown on each endpoint is the intended one.
+    Authentication and roles are implemented with JWT Bearer tokens.
+    Public registration always creates `STUDENT` users; `ADMIN` users can
+    only be created by another authenticated admin.
 servers:
   - url: http://localhost:3000/api
 tags:
+  - name: Users / Auth
   - name: Books
   - name: Digital resources
   - name: Physical items
 
 paths:
+  /auth/register:
+    post:
+      tags: [Users / Auth]
+      summary: Register a student account
+      description: Public endpoint. Always creates a `STUDENT` user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateUser' }
+            example:
+              full_name: Juan Perez
+              email: juan.perez@library.dev
+              password: Password123
+      responses:
+        '201':
+          description: Student created successfully
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+              example:
+                user:
+                  _id: 67052b3773fa6065cc7f1e10
+                  full_name: Juan Perez
+                  email: juan.perez@library.dev
+                  role: STUDENT
+                  status: ACTIVE
+                  createdAt: '2026-10-08T14:26:02.295Z'
+                  updatedAt: '2026-10-08T14:26:02.295Z'
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.student
+        '400':
+          description: Invalid payload or duplicated email
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                statusCode: 400
+                message: User already exists with that email
+                error: Bad Request
+  /auth/login:
+    post:
+      tags: [Users / Auth]
+      summary: Authenticate a user
+      description: Returns the authenticated user and a JWT Bearer token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginUser' }
+            example:
+              email: juan.perez@library.dev
+              password: Password123
+      responses:
+        '200':
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+              example:
+                user:
+                  _id: 67052b3773fa6065cc7f1e10
+                  full_name: Juan Perez
+                  email: juan.perez@library.dev
+                  role: STUDENT
+                  status: ACTIVE
+                  createdAt: '2026-10-08T14:26:02.295Z'
+                  updatedAt: '2026-10-08T14:26:02.295Z'
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.student
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                statusCode: 401
+                message: Invalid credentials
+                error: Unauthorized
+  /auth/profile:
+    get:
+      tags: [Users / Auth]
+      summary: Get the authenticated user's profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Authenticated user
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+              example:
+                id: 67052b3773fa6065cc7f1e10
+                email: juan.perez@library.dev
+                role: STUDENT
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/admin:
+    post:
+      tags: [Users / Auth]
+      summary: Create an admin user
+      description: Protected endpoint. Only an authenticated `ADMIN` can create another admin.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateUser' }
+            example:
+              full_name: Maria Admin
+              email: maria.admin@library.dev
+              password: AdminPass123
+      responses:
+        '201':
+          description: Admin created successfully
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+              example:
+                user:
+                  _id: 67052b6573fa6065cc7f1e11
+                  full_name: Maria Admin
+                  email: maria.admin@library.dev
+                  role: ADMIN
+                  status: ACTIVE
+                  createdAt: '2026-10-08T14:26:49.657Z'
+                  updatedAt: '2026-10-08T14:26:49.657Z'
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.admin
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /auth:
+    get:
+      tags: [Users / Auth]
+      summary: List all users
+      description: Protected endpoint. Only an authenticated `ADMIN` can access it.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/User' }
+              example:
+                - _id: 67052b3773fa6065cc7f1e10
+                  full_name: Juan Perez
+                  email: juan.perez@library.dev
+                  role: STUDENT
+                  status: ACTIVE
+                  createdAt: '2026-10-08T14:26:02.295Z'
+                  updatedAt: '2026-10-08T14:26:02.295Z'
+                - _id: 67052b6573fa6065cc7f1e11
+                  full_name: Maria Admin
+                  email: maria.admin@library.dev
+                  role: ADMIN
+                  status: ACTIVE
+                  createdAt: '2026-10-08T14:26:49.657Z'
+                  updatedAt: '2026-10-08T14:26:49.657Z'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /auth/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
+    get:
+      tags: [Users / Auth]
+      summary: Get a user by id
+      description: Protected endpoint. Only an authenticated `ADMIN` can access it.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+              example:
+                _id: 67052b3773fa6065cc7f1e10
+                full_name: Juan Perez
+                email: juan.perez@library.dev
+                role: STUDENT
+                status: ACTIVE
+                createdAt: '2026-10-08T14:26:02.295Z'
+                updatedAt: '2026-10-08T14:26:02.295Z'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Users / Auth]
+      summary: Update a user
+      description: Protected endpoint. Only an authenticated `ADMIN` can update users.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateUser' }
+            example:
+              full_name: Juan Perez Gomez
+              password: NewPassword123
+              status: ACTIVE
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+              example:
+                _id: 67052b3773fa6065cc7f1e10
+                full_name: Juan Perez Gomez
+                email: juan.perez@library.dev
+                role: STUDENT
+                status: ACTIVE
+                createdAt: '2026-10-08T14:26:02.295Z'
+                updatedAt: '2026-10-08T14:30:10.112Z'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Users / Auth]
+      summary: Delete a user
+      description: Protected endpoint. Only an authenticated `ADMIN` can delete users.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted user
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+              example:
+                _id: 67052b3773fa6065cc7f1e10
+                full_name: Juan Perez
+                email: juan.perez@library.dev
+                role: STUDENT
+                status: ACTIVE
+                createdAt: '2026-10-08T14:26:02.295Z'
+                updatedAt: '2026-10-08T14:26:02.295Z'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
   /books:
     post:
       tags: [Books]
@@ -251,16 +497,51 @@ components:
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 400
+            message: Validation failed
+            error: Bad Request
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 401
+            message: Unauthorized
+            error: Unauthorized
+    Forbidden:
+      description: Authenticated but without sufficient role permissions
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 403
+            message: 'This action requires one of the following roles: ADMIN'
+            error: Forbidden
     NotFound:
       description: Resource not found
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 404
+            message: User with id 665f1c2e8a1b2c3d4e5f6a7b not found
+            error: Not Found
     Conflict:
       description: Conflict with the current state of the resource
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 409
+            message: Conflict with the current state of the resource
+            error: Conflict
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Error:
       type: object
@@ -272,6 +553,62 @@ components:
       type: object
       properties:
         message: { type: string }
+    CreateUser:
+      type: object
+      required: [full_name, email, password]
+      properties:
+        full_name: { type: string, example: Juan Perez }
+        email: { type: string, format: email, example: juan.perez@library.dev }
+        password: { type: string, minLength: 8, maxLength: 32, example: Password123 }
+    UpdateUser:
+      type: object
+      description: Same as CreateUser, but all fields are optional.
+      properties:
+        full_name: { type: string, example: Juan Perez Gomez }
+        email: { type: string, format: email, example: juan.perez@library.dev }
+        password: { type: string, minLength: 8, maxLength: 32, example: NewPassword123 }
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED]
+          example: ACTIVE
+    LoginUser:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: juan.perez@library.dev }
+        password: { type: string, example: Password123 }
+    User:
+      type: object
+      properties:
+        _id: { type: string, example: 67052b3773fa6065cc7f1e10 }
+        full_name: { type: string, example: Juan Perez }
+        email: { type: string, format: email, example: juan.perez@library.dev }
+        role:
+          type: string
+          enum: [STUDENT, ADMIN]
+          example: STUDENT
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED]
+          example: ACTIVE
+        createdAt: { type: string, format: date-time, example: '2026-10-08T14:26:02.295Z' }
+        updatedAt: { type: string, format: date-time, example: '2026-10-08T14:26:02.295Z' }
+    Profile:
+      type: object
+      properties:
+        id: { type: string, example: 67052b3773fa6065cc7f1e10 }
+        email: { type: string, format: email, example: juan.perez@library.dev }
+        role:
+          type: string
+          enum: [STUDENT, ADMIN]
+          example: STUDENT
+    AuthResponse:
+      type: object
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.token
     CreateBook:
       type: object
       required: [isbn, title, author, publisher, categories]
