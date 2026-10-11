@@ -117,6 +117,8 @@ export class AuthService {
   }
 
   private handleDbErrors(error: any): never {
+    if (error instanceof NotFoundException) throw error;
+
     if (error.code === 11000) {
       throw new BadRequestException(`User already exists with that email`);
     }

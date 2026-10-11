@@ -1,760 +1,262 @@
-[{
-  "_id": {
-    "$oid": "6ac04434b3e79f540e2dbab5"
-  },
+[
+{
+  "_id": { "$oid": "6ac04434b3e79f540e2dbab5" },
   "isbn": "978-0-06-112008-4",
   "title": "To Kill a Mockingbird",
   "author": "Harper Lee",
   "publisher": "HarperCollins",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:28.144Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:28.144Z"
-  }
+  "publicationYear": 1960,
+  "categories": ["Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780061120084-L.jpg",
+  "description": "A young girl in the segregated American South learns about justice, racism and compassion as her father defends a wrongly accused Black man in court.",
+  "createdAt": { "$date": "2026-10-02T23:54:28.144Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:28.144Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04435b3e79f540e2dbab6"
-  },
+  "_id": { "$oid": "6ac04435b3e79f540e2dbab6" },
   "isbn": "978-0-7432-7356-5",
   "title": "1984",
   "author": "George Orwell",
   "publisher": "Secker & Warburg",
-  "categories": [
-    "Dystopia",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:29.497Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:29.497Z"
-  }
+  "publicationYear": 1949,
+  "categories": ["Dystopia", "Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
+  "description": "In a totalitarian superstate ruled by constant surveillance and propaganda, a low-ranking party worker begins to question the regime that controls every aspect of life.",
+  "createdAt": { "$date": "2026-10-02T23:54:29.497Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:29.497Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04436b3e79f540e2dbab7"
-  },
+  "_id": { "$oid": "6ac04436b3e79f540e2dbab7" },
   "isbn": "978-0-7432-7357-2",
   "title": "The Great Gatsby",
   "author": "F. Scott Fitzgerald",
   "publisher": "Scribner",
-  "categories": [
-    "Classic",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:30.117Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:30.117Z"
-  }
+  "publicationYear": 1925,
+  "categories": ["Classic", "Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273572-L.jpg",
+  "description": "A mysterious millionaire's obsessive pursuit of a lost love exposes the glamour and moral decay of Jazz Age America.",
+  "createdAt": { "$date": "2026-10-02T23:54:30.117Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:30.117Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04436b3e79f540e2dbab8"
-  },
+  "_id": { "$oid": "6ac04436b3e79f540e2dbab8" },
   "isbn": "978-0-14-028329-7",
   "title": "Of Mice and Men",
   "author": "John Steinbeck",
   "publisher": "Penguin Books",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:30.656Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:30.656Z"
-  }
+  "publicationYear": 1937,
+  "categories": ["Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780140283297-L.jpg",
+  "description": "Two displaced migrant ranch workers, bound by friendship and a shared dream of owning their own farm, struggle to survive during the Great Depression.",
+  "createdAt": { "$date": "2026-10-02T23:54:30.656Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:30.656Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04436b3e79f540e2dbab9"
-  },
+  "_id": { "$oid": "6ac04436b3e79f540e2dbab9" },
   "isbn": "978-0-06-093546-9",
   "title": "Brave New World",
   "author": "Aldous Huxley",
   "publisher": "Chatto & Windus",
-  "categories": [
-    "Dystopia",
-    "Science Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:30.857Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:30.857Z"
-  }
+  "publicationYear": 1932,
+  "categories": ["Dystopia", "Science Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780060935467-L.jpg",
+  "description": "In a genetically engineered future built on comfort and conformity, one man begins to question the cost of a world without pain, conflict or freedom.",
+  "createdAt": { "$date": "2026-10-02T23:54:30.857Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:30.857Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04437b3e79f540e2dbaba"
-  },
+  "_id": { "$oid": "6ac04437b3e79f540e2dbaba" },
   "isbn": "978-0-14-303943-3",
   "title": "Fahrenheit 451",
   "author": "Ray Bradbury",
   "publisher": "Ballantine Books",
-  "categories": [
-    "Dystopia",
-    "Science Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:31.065Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:31.065Z"
-  }
+  "publicationYear": 1953,
+  "categories": ["Dystopia", "Science Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780143039433-L.jpg",
+  "description": "In a future where books are outlawed and burned by firemen, one fireman begins to question his role after meeting a woman who dares to think for herself.",
+  "createdAt": { "$date": "2026-10-02T23:54:31.065Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:31.065Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04437b3e79f540e2dbabb"
-  },
+  "_id": { "$oid": "6ac04437b3e79f540e2dbabb" },
   "isbn": "978-0-7432-7358-9",
   "title": "The Catcher in the Rye",
   "author": "J.D. Salinger",
   "publisher": "Little, Brown",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:31.354Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:31.354Z"
-  }
+  "publicationYear": 1951,
+  "categories": ["Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273589-L.jpg",
+  "description": "A disillusioned teenager wanders New York City over a few days, grappling with alienation, loss and the phoniness of the adult world.",
+  "createdAt": { "$date": "2026-10-02T23:54:31.354Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:31.354Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04437b3e79f540e2dbabc"
-  },
+  "_id": { "$oid": "6ac04437b3e79f540e2dbabc" },
   "isbn": "978-0-14-028330-3",
   "title": "Lord of the Flies",
   "author": "William Golding",
   "publisher": "Faber and Faber",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:31.474Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:31.474Z"
-  }
+  "publicationYear": 1954,
+  "categories": ["Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780140283303-L.jpg",
+  "description": "A group of boys stranded on a deserted island descend into savagery as they attempt to govern themselves without adult supervision.",
+  "createdAt": { "$date": "2026-10-02T23:54:31.474Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:31.474Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04437b3e79f540e2dbabd"
-  },
+  "_id": { "$oid": "6ac04437b3e79f540e2dbabd" },
   "isbn": "978-0-06-112009-1",
   "title": "Animal Farm",
   "author": "George Orwell",
   "publisher": "Secker & Warburg",
-  "categories": [
-    "Satire",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:31.680Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:31.680Z"
-  }
+  "publicationYear": 1945,
+  "categories": ["Satire", "Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780061120091-L.jpg",
+  "description": "Farm animals overthrow their human owner in hopes of equality, only to see the revolution corrupted by a new ruling class among their own.",
+  "createdAt": { "$date": "2026-10-02T23:54:31.680Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:31.680Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbabe"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbabe" },
   "isbn": "978-0-7432-7359-6",
   "title": "The Hobbit",
   "author": "J.R.R. Tolkien",
   "publisher": "Allen & Unwin",
-  "categories": [
-    "Fantasy",
-    "Adventure"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.033Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.033Z"
-  }
+  "publicationYear": 1937,
+  "categories": ["Fantasy", "Adventure"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273596-L.jpg",
+  "description": "A reluctant hobbit is swept into an epic quest to reclaim a dwarven kingdom from a fearsome dragon.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.033Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.033Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbabf"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbabf" },
   "isbn": "978-0-618-00222-3",
   "title": "The Lord of the Rings",
   "author": "J.R.R. Tolkien",
   "publisher": "Allen & Unwin",
-  "categories": [
-    "Fantasy",
-    "Epic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.253Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.253Z"
-  }
+  "publicationYear": 1954,
+  "categories": ["Fantasy", "Epic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780618002223-L.jpg",
+  "description": "A fellowship of unlikely heroes sets out to destroy a powerful ring before it falls into the hands of a dark lord.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.253Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.253Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbac0"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbac0" },
   "isbn": "978-0-7432-7360-2",
   "title": "Harry Potter and the Sorcerers Stone",
   "author": "J.K. Rowling",
   "publisher": "Bloomsbury",
-  "categories": [
-    "Fantasy",
-    "Young Adult"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.465Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.465Z"
-  }
+  "publicationYear": 1997,
+  "categories": ["Fantasy", "Young Adult"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780747532699-L.jpg",
+  "description": "An orphaned boy discovers he is a wizard and begins his first year at a magical school, uncovering secrets about his past along the way.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.465Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.465Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbac1"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbac1" },
   "isbn": "978-0-439-06486-6",
   "title": "Harry Potter and the Chamber of Secrets",
   "author": "J.K. Rowling",
   "publisher": "Bloomsbury",
-  "categories": [
-    "Fantasy",
-    "Young Adult"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.548Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.548Z"
-  }
+  "publicationYear": 1998,
+  "categories": ["Fantasy", "Young Adult"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780439064866-L.jpg",
+  "description": "A mysterious force begins petrifying students at a school of magic, and a young wizard must uncover the truth behind a legendary hidden chamber.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.548Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.548Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbac2"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbac2" },
   "isbn": "978-0-7432-7361-9",
   "title": "The Alchemist",
   "author": "Paulo Coelho",
   "publisher": "HarperOne",
-  "categories": [
-    "Fiction",
-    "Philosophy"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.627Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.627Z"
-  }
+  "publicationYear": 1988,
+  "categories": ["Fiction", "Philosophy"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273619-L.jpg",
+  "description": "A young shepherd travels from Spain to Egypt in search of treasure, discovering along the way that the real journey is about following one's own dreams.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.627Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.627Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbac3"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbac3" },
   "isbn": "978-0-14-028331-0",
   "title": "Don Quixote",
   "author": "Miguel de Cervantes",
   "publisher": "Francisco de Robles",
-  "categories": [
-    "Classic",
-    "Adventure"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:32.948Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:32.948Z"
-  }
+  "publicationYear": 1605,
+  "categories": ["Classic", "Adventure"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780140283310-L.jpg",
+  "description": "An aging nobleman, driven mad by chivalric romances, sets out as a knight-errant with his loyal squire to right the wrongs of the world.",
+  "createdAt": { "$date": "2026-10-02T23:54:32.948Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:32.948Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04438b3e79f540e2dbac4"
-  },
+  "_id": { "$oid": "6ac04438b3e79f540e2dbac4" },
   "isbn": "978-0-7432-7362-6",
   "title": "One Hundred Years of Solitude",
   "author": "Gabriel Garcia Marquez",
   "publisher": "Harper & Row",
-  "categories": [
-    "Magic Realism",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:33.000Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:33.000Z"
-  }
+  "publicationYear": 1967,
+  "categories": ["Magic Realism", "Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273626-L.jpg",
+  "description": "The multigenerational saga of the Buendia family traces the rise and fall of the mythical town of Macondo.",
+  "createdAt": { "$date": "2026-10-02T23:54:33.000Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:33.000Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04439b3e79f540e2dbac5"
-  },
+  "_id": { "$oid": "6ac04439b3e79f540e2dbac5" },
   "isbn": "978-0-06-112010-7",
   "title": "The Old Man and the Sea",
   "author": "Ernest Hemingway",
   "publisher": "Scribner",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:33.075Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:33.075Z"
-  }
+  "publicationYear": 1952,
+  "categories": ["Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780061120107-L.jpg",
+  "description": "An aging Cuban fisherman engages in an epic battle with a giant marlin far out in the Gulf Stream.",
+  "createdAt": { "$date": "2026-10-02T23:54:33.075Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:33.075Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04439b3e79f540e2dbac6"
-  },
+  "_id": { "$oid": "6ac04439b3e79f540e2dbac6" },
   "isbn": "978-0-7432-7363-3",
   "title": "Crime and Punishment",
   "author": "Fyodor Dostoevsky",
   "publisher": "The Russian Messenger",
-  "categories": [
-    "Classic",
-    "Psychological Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:33.368Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:33.368Z"
-  }
+  "publicationYear": 1866,
+  "categories": ["Classic", "Psychological Fiction"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273633-L.jpg",
+  "description": "A destitute former student commits a murder to test his own theories of morality, then struggles with guilt and the possibility of redemption.",
+  "createdAt": { "$date": "2026-10-02T23:54:33.368Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:33.368Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04439b3e79f540e2dbac7"
-  },
+  "_id": { "$oid": "6ac04439b3e79f540e2dbac7" },
   "isbn": "978-0-14-028332-7",
   "title": "War and Peace",
   "author": "Leo Tolstoy",
   "publisher": "The Russian Messenger",
-  "categories": [
-    "Historical Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:33.480Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:33.480Z"
-  }
+  "publicationYear": 1869,
+  "categories": ["Historical Fiction", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780140283327-L.jpg",
+  "description": "The sweeping story follows several aristocratic Russian families as their lives intertwine against the backdrop of the Napoleonic Wars.",
+  "createdAt": { "$date": "2026-10-02T23:54:33.480Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:33.480Z" }
 },
 {
-  "_id": {
-    "$oid": "6ac04439b3e79f540e2dbac8"
-  },
+  "_id": { "$oid": "6ac04439b3e79f540e2dbac8" },
   "isbn": "978-0-7432-7364-0",
   "title": "The Divine Comedy",
   "author": "Dante Alighieri",
   "publisher": "Self-published",
-  "categories": [
-    "Poetry",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:54:33.676Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:54:33.676Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac0448fb3e79f540e2dbac9"
-  },
-  "isbn": "978-0-06-112008-4",
-  "title": "To Kill a Mockingbird",
-  "author": "Harper Lee",
-  "publisher": "HarperCollins",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:55:59.491Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:55:59.491Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbaca"
-  },
-  "isbn": "978-0-7432-7356-5",
-  "title": "1984",
-  "author": "George Orwell",
-  "publisher": "Secker & Warburg",
-  "categories": [
-    "Dystopia",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.003Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.003Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbacb"
-  },
-  "isbn": "978-0-7432-7357-2",
-  "title": "The Great Gatsby",
-  "author": "F. Scott Fitzgerald",
-  "publisher": "Scribner",
-  "categories": [
-    "Classic",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.075Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.075Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbacc"
-  },
-  "isbn": "978-0-14-028329-7",
-  "title": "Of Mice and Men",
-  "author": "John Steinbeck",
-  "publisher": "Penguin Books",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.204Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.204Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbacd"
-  },
-  "isbn": "978-0-06-093546-9",
-  "title": "Brave New World",
-  "author": "Aldous Huxley",
-  "publisher": "Chatto & Windus",
-  "categories": [
-    "Dystopia",
-    "Science Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.670Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.670Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbace"
-  },
-  "isbn": "978-0-14-303943-3",
-  "title": "Fahrenheit 451",
-  "author": "Ray Bradbury",
-  "publisher": "Ballantine Books",
-  "categories": [
-    "Dystopia",
-    "Science Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.783Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.783Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04490b3e79f540e2dbacf"
-  },
-  "isbn": "978-0-7432-7358-9",
-  "title": "The Catcher in the Rye",
-  "author": "J.D. Salinger",
-  "publisher": "Little, Brown",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:00.854Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:00.854Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad0"
-  },
-  "isbn": "978-0-14-028330-3",
-  "title": "Lord of the Flies",
-  "author": "William Golding",
-  "publisher": "Faber and Faber",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.033Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.033Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad1"
-  },
-  "isbn": "978-0-06-112009-1",
-  "title": "Animal Farm",
-  "author": "George Orwell",
-  "publisher": "Secker & Warburg",
-  "categories": [
-    "Satire",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.226Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.226Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad2"
-  },
-  "isbn": "978-0-7432-7359-6",
-  "title": "The Hobbit",
-  "author": "J.R.R. Tolkien",
-  "publisher": "Allen & Unwin",
-  "categories": [
-    "Fantasy",
-    "Adventure"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.389Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.389Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad3"
-  },
-  "isbn": "978-0-618-00222-3",
-  "title": "The Lord of the Rings",
-  "author": "J.R.R. Tolkien",
-  "publisher": "Allen & Unwin",
-  "categories": [
-    "Fantasy",
-    "Epic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.472Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.472Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad4"
-  },
-  "isbn": "978-0-7432-7360-2",
-  "title": "Harry Potter and the Sorcerers Stone",
-  "author": "J.K. Rowling",
-  "publisher": "Bloomsbury",
-  "categories": [
-    "Fantasy",
-    "Young Adult"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.675Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.675Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad5"
-  },
-  "isbn": "978-0-439-06486-6",
-  "title": "Harry Potter and the Chamber of Secrets",
-  "author": "J.K. Rowling",
-  "publisher": "Bloomsbury",
-  "categories": [
-    "Fantasy",
-    "Young Adult"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.792Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.792Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04491b3e79f540e2dbad6"
-  },
-  "isbn": "978-0-7432-7361-9",
-  "title": "The Alchemist",
-  "author": "Paulo Coelho",
-  "publisher": "HarperOne",
-  "categories": [
-    "Fiction",
-    "Philosophy"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:01.852Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:01.852Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbad7"
-  },
-  "isbn": "978-0-14-028331-0",
-  "title": "Don Quixote",
-  "author": "Miguel de Cervantes",
-  "publisher": "Francisco de Robles",
-  "categories": [
-    "Classic",
-    "Adventure"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.018Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.018Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbad8"
-  },
-  "isbn": "978-0-7432-7362-6",
-  "title": "One Hundred Years of Solitude",
-  "author": "Gabriel Garcia Marquez",
-  "publisher": "Harper & Row",
-  "categories": [
-    "Magic Realism",
-    "Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.213Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.213Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbad9"
-  },
-  "isbn": "978-0-06-112010-7",
-  "title": "The Old Man and the Sea",
-  "author": "Ernest Hemingway",
-  "publisher": "Scribner",
-  "categories": [
-    "Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.265Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.265Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbada"
-  },
-  "isbn": "978-0-7432-7363-3",
-  "title": "Crime and Punishment",
-  "author": "Fyodor Dostoevsky",
-  "publisher": "The Russian Messenger",
-  "categories": [
-    "Classic",
-    "Psychological Fiction"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.462Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.462Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbadb"
-  },
-  "isbn": "978-0-14-028332-7",
-  "title": "War and Peace",
-  "author": "Leo Tolstoy",
-  "publisher": "The Russian Messenger",
-  "categories": [
-    "Historical Fiction",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.636Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.636Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "6ac04492b3e79f540e2dbadc"
-  },
-  "isbn": "978-0-7432-7364-0",
-  "title": "The Divine Comedy",
-  "author": "Dante Alighieri",
-  "publisher": "Self-published",
-  "categories": [
-    "Poetry",
-    "Classic"
-  ],
-  "createdAt": {
-    "$date": "2026-10-02T23:56:02.836Z"
-  },
-  "updatedAt": {
-    "$date": "2026-10-02T23:56:02.836Z"
-  }
-}]
+  "publicationYear": 1320,
+  "categories": ["Poetry", "Classic"],
+  "coverUrl": "https://covers.openlibrary.org/b/isbn/9780743273640-L.jpg",
+  "description": "A poet's allegorical journey through Hell, Purgatory and Paradise explores sin, redemption and the nature of divine justice.",
+  "createdAt": { "$date": "2026-10-02T23:54:33.676Z" },
+  "updatedAt": { "$date": "2026-10-02T23:54:33.676Z" }
+}
+]

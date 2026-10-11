@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum ItemStatus {
   AVAILABLE = 'AVAILABLE',
@@ -10,7 +10,7 @@ export enum ItemStatus {
 
 @Schema({ timestamps: true, versionKey: false })
 export class PhysicalItem extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Book', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Book', required: true })
   book_id: Types.ObjectId;
 
   @Prop({ required: true, unique: true })

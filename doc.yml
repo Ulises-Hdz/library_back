@@ -15,6 +15,7 @@ tags:
   - name: Books
   - name: Digital resources
   - name: Physical items
+  - name: Loans
 
 paths:
   /auth/register:
@@ -484,6 +485,81 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+  /loans:
+    post:
+      tags: [Loans]
+      summary: Register a loan (Admin)
+      description: Fails with 409 if the physical item is not AVAILABLE.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateLoan' }
+      responses:
+        '201':
+          description: Loan created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Loan' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [Loans]
+      summary: List all loans (Admin)
+      responses:
+        '200':
+          description: List of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Loan' }
+  /loans/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
+    get:
+      tags: [Loans]
+      summary: Loan details (Admin)
+      responses:
+        '200':
+          description: Loan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Loan' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Loans]
+      summary: Reassign the user or physical item of an active loan (Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateLoan' }
+      responses:
+        '200':
+          description: Loan updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Loan' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      tags: [Loans]
+      summary: Register the return of the book (Admin)
+      description: Closes the loan (`status=RETURNED`) and frees the physical item.
+      responses:
+        '200':
+          description: Loan returned
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Message' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
 components:
   parameters:
     MongoId:
@@ -665,3 +741,29 @@ components:
         status:
           type: string
           enum: [AVAILABLE, LOANED, LOST, IN_REPAIR]
+    CreateLoan:
+      type: object
+      required: [user_id, physical_item_id]
+      properties:
+        user_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+        physical_item_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7c }
+    UpdateLoan:
+      type: object
+      description: Same as CreateLoan, but all fields are optional.
+      properties:
+        user_id: { type: string }
+        physical_item_id: { type: string }
+    Loan:
+      type: object
+      properties:
+        _id: { type: string }
+        user_id: { type: string }
+        physical_item_id: { type: string }
+        loanDate: { type: string, format: date-time }
+        dueDate: { type: string, format: date-time }
+        returnDate: { type: string, format: date-time, nullable: true }
+        status:
+          type: string
+          enum: [ACTIVE, RETURNED, OVERDUE]
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }

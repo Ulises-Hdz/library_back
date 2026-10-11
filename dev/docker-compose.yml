@@ -10,7 +10,7 @@ services:
       - path: ../.env
         required: false
     environment:
-      - MONGO_URI=mongodb://mongo:27017/database
+      - MONGO_URI=mongodb://mongo:27017/library
     depends_on:
       - mongo
     volumes:
