@@ -98,7 +98,7 @@ export class BookService {
       await book.deleteOne();
       return { message: `Book "${book.title}" deleted successfully.` };
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
+      if (error instanceof NotFoundException || error instanceof ConflictException) throw error;
       this.handleDBError(error);
     }
   }

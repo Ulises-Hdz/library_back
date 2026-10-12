@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum LoanStatus {
   ACTIVE = 'ACTIVE',
@@ -9,10 +9,10 @@ export enum LoanStatus {
 
 @Schema({ timestamps: true, versionKey: false })
 export class Loan extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'PhysicalItem', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'PhysicalItem', required: true })
   physical_item_id: Types.ObjectId;
 
   @Prop({ required: true, default: Date.now })

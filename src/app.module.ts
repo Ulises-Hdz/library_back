@@ -3,10 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EnvConfiguration } from 'src/config/env.config';
 import { JoiValidationSchema } from './config/joi.validation';
-import { LoansModule } from './loans/loans.module';
+import { LoansModule } from './modules/loans/loans.module';
 import { BookModule } from './modules/book/book.module';
 import { PhysicalItemModule } from './modules/physical-item/physical-item.module';
 import { ResourceDigitalModule } from './modules/resource-digital/resource-digital.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ResourceDigitalModule } from './modules/resource-digital/resource-digit
     PhysicalItemModule,
     ResourceDigitalModule,
     LoansModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

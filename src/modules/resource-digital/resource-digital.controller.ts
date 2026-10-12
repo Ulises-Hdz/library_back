@@ -11,6 +11,7 @@ import {
   Res,
   StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,16 +21,23 @@ import { ResourceDigitalService } from './resource-digital.service';
 import type { UploadedFileData } from 'src/common/interfaces/uploaded-file.interface';
 import { CreateDigitalResourceDto } from 'src/common/dto/digital-resource.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/models/user.model';
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
 @Controller('digital-resources')
+@UseGuards(JwtAuthGuard)
 export class ResourceDigitalController {
   constructor(private readonly resourceDigitalService: ResourceDigitalService) {}
 
   // POST /api/digital-resources (multipart/form-data: file, book_id, onlineReadOnly?)
   // Admin
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileInterceptor('file', {
@@ -68,6 +76,8 @@ export class ResourceDigitalController {
   // DELETE /api/digital-resources/:id
   // Admin
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   remove(@Param('id', ParseMongoIdPipe) id: string) {
     return this.resourceDigitalService.remove(id);
   }

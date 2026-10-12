@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum DigitalFormat {
   PDF = 'PDF',
@@ -8,7 +8,7 @@ export enum DigitalFormat {
 
 @Schema({ timestamps: true, versionKey: false })
 export class DigitalResource extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Book', required: true, unique: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Book', required: true, unique: true })
   book_id: Types.ObjectId;
 
   @Prop({ required: true })
