@@ -26,6 +26,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (user.status !== UserStatus.ACTIVE) throw new UnauthorizedException('User is not active');
 
     // Attached to `request.user` and consumed by RolesGuard / controllers.
-    return { id: user._id, email: user.email, role: user.role };
+    return { id: user._id, email: user.email, role: user.role, full_name: user.full_name };
   }
 }
