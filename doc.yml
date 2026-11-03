@@ -455,6 +455,24 @@ paths:
                       IN_REPAIR: 1
         '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }
+  /physical-items/book/{bookId}/available:
+    get:
+      tags: [Physical items]
+      summary: List available physical copies of a book (Authenticated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: bookId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Available physical items
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/PhysicalItem' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
   /physical-items/{id}/status:
     patch:
       tags: [Physical items]
