@@ -3,12 +3,17 @@ import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum DigitalFormat {
   PDF = 'PDF',
-  EPUB = 'EPUB'
+  EPUB = 'EPUB',
 }
 
 @Schema({ timestamps: true, versionKey: false })
 export class DigitalResource extends Document {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Book', required: true, unique: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Book',
+    required: true,
+    unique: true,
+  })
   book_id: Types.ObjectId;
 
   @Prop({ required: true })
@@ -24,4 +29,5 @@ export class DigitalResource extends Document {
   onlineReadOnly: boolean; // If true, the student cannot download the file, only read it in the viewer
 }
 
-export const DigitalResourceSchema = SchemaFactory.createForClass(DigitalResource);
+export const DigitalResourceSchema =
+  SchemaFactory.createForClass(DigitalResource);

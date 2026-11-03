@@ -23,10 +23,6 @@ export class CreatePhysicalItemDto {
 
 // LOANED is managed by the loans module, never assigned manually
 export class UpdatePhysicalItemStatusDto {
-  @IsIn([
-    ItemStatus.AVAILABLE,
-    ItemStatus.LOST,
-    ItemStatus.IN_REPAIR,
-  ])
+  @IsIn([ItemStatus.AVAILABLE, ItemStatus.LOST, ItemStatus.IN_REPAIR])
   status: ItemStatus;
 }

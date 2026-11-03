@@ -31,7 +31,9 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024;
 @Controller('digital-resources')
 @UseGuards(JwtAuthGuard)
 export class ResourceDigitalController {
-  constructor(private readonly resourceDigitalService: ResourceDigitalService) {}
+  constructor(
+    private readonly resourceDigitalService: ResourceDigitalService,
+  ) {}
 
   // POST /api/digital-resources (multipart/form-data: file, book_id, onlineReadOnly?)
   // Admin

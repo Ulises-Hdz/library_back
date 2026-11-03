@@ -4,7 +4,7 @@ import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 export enum LoanStatus {
   ACTIVE = 'ACTIVE',
   RETURNED = 'RETURNED',
-  OVERDUE = 'OVERDUE'
+  OVERDUE = 'OVERDUE',
 }
 
 @Schema({ timestamps: true, versionKey: false })
@@ -12,7 +12,11 @@ export class Loan extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'PhysicalItem', required: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'PhysicalItem',
+    required: true,
+  })
   physical_item_id: Types.ObjectId;
 
   @Prop({ required: true, default: Date.now })

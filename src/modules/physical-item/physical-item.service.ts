@@ -11,11 +11,9 @@ import {
   CreatePhysicalItemDto,
   UpdatePhysicalItemStatusDto,
 } from 'src/common/dto/physical.dto';
-import {
-  PhysicalItem,
-  ItemStatus,
-} from 'src/models/physical-resource.model';
+import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
 import { Book } from 'src/models/book.model';
+import { asMongoError } from 'src/common/utils/db-error';
 
 @Injectable()
 export class PhysicalItemService {
@@ -32,7 +30,7 @@ export class PhysicalItemService {
     try {
       return await this.physicalItemModel.create(dto);
     } catch (error) {
-      if (error.code === 11000) {
+      if (asMongoError(error).code === 11000) {
         throw new BadRequestException(
           `A physical item with barcode "${dto.barcode}" already exists.`,
         );

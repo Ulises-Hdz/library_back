@@ -71,11 +71,11 @@ export class ResourceDigitalService {
   }
 
   async getFileByBook(bookId: string) {
-    const resource = await this.digitalResourceModel.findOne({ book_id: bookId });
+    const resource = await this.digitalResourceModel.findOne({
+      book_id: bookId,
+    });
     if (!resource) {
-      throw new NotFoundException(
-        `Book "${bookId}" has no digital resource.`,
-      );
+      throw new NotFoundException(`Book "${bookId}" has no digital resource.`);
     }
     const ext = extname(resource.fileUrl).toLowerCase();
     return {

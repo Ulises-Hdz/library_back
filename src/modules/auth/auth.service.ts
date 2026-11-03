@@ -16,6 +16,7 @@ import {
   LoginUserDto,
   UpdateUserDto,
 } from 'src/common/dto/user.dto';
+import { asMongoError } from 'src/common/utils/db-error';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { User, UserRole, UserStatus } from 'src/models/user.model';
 import { Loan, LoanStatus } from 'src/models/loan.model';
@@ -157,18 +158,19 @@ export class AuthService {
 
   /** Strips the password hash before returning a user document to the client. */
   private toSafeUser(user: User) {
-    const { password, ...safeUser } = user.toObject();
+    const safeUser = user.toObject<Record<string, unknown>>();
+    delete safeUser.password;
     return safeUser;
   }
 
-  private handleDbErrors(error: any): never {
+  private handleDbErrors(error: unknown): never {
     if (
       error instanceof NotFoundException ||
       error instanceof ForbiddenException
     )
       throw error;
 
-    if (error.code === 11000) {
+    if (asMongoError(error).code === 11000) {
       throw new BadRequestException(`User already exists with that email`);
     }
 

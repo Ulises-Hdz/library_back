@@ -1,10 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { setupRedoc } from './common/middlewares/redoc.middlewares';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Files are served cross-origin to the SPA, so the resource policy must allow it.
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
   const origins = (
     process.env.CORS_ORIGIN ?? 'http://localhost:4200,http://localhost:4210'

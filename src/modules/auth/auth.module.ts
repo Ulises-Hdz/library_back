@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -24,7 +24,9 @@ import { LoanSchema } from 'src/models/loan.model';
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('jwtSecret'),
         signOptions: {
-          expiresIn: configService.get<string>('jwtExpiresIn') as any,
+          expiresIn: configService.get<string>(
+            'jwtExpiresIn',
+          ) as JwtSignOptions['expiresIn'],
         },
       }),
     }),

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { asMongoError } from 'src/common/utils/db-error';
 import { CreateLoanDto, UpdateLoanDto } from 'src/common/dto/loan.dto';
 import { Loan, LoanStatus } from 'src/models/loan.model';
 import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
@@ -141,19 +142,22 @@ export class LoansService {
   /** Reports ACTIVE loans past their due date as OVERDUE without mutating the stored status. */
   private withComputedStatus(loan: Loan) {
     if (loan.status === LoanStatus.ACTIVE && loan.dueDate < new Date()) {
-      return { ...loan.toObject(), status: LoanStatus.OVERDUE };
+      return {
+        ...loan.toObject<Record<string, unknown>>(),
+        status: LoanStatus.OVERDUE,
+      };
     }
     return loan;
   }
 
-  private handleDbErrors(error: any): never {
+  private handleDbErrors(error: unknown): never {
     if (
       error instanceof NotFoundException ||
       error instanceof ConflictException
     ) {
       throw error;
     }
-    if (error.name === 'CastError') {
+    if (asMongoError(error).name === 'CastError') {
       throw new BadRequestException('Invalid identifier provided.');
     }
     console.error(error);

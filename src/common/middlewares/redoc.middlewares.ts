@@ -1,14 +1,16 @@
-import redoc  from 'redoc-express';
+import type { INestApplication } from '@nestjs/common';
+import type { Request, Response } from 'express';
+import redoc from 'redoc-express';
 
-export const setupRedoc = (app: any)=> {
-    const redoc_options = {
-        title: 'Library',
-        specUrl: 'doc.yml',
-    };
+export const setupRedoc = (app: INestApplication) => {
+  const redoc_options = {
+    title: 'Library',
+    specUrl: 'doc.yml',
+  };
 
-    app.use('/docs', redoc(redoc_options));
+  app.use('/docs', redoc(redoc_options));
 
-    app.use('/doc.yml', (req:any, res:any) => {
-        res.sendFile(`doc.yml`, { root: '.' });
-    });
-}
+  app.use('/doc.yml', (_req: Request, res: Response) => {
+    res.sendFile(`doc.yml`, { root: '.' });
+  });
+};

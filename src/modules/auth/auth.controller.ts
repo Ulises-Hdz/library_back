@@ -11,6 +11,8 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import type { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request.interface';
 import { AuthService } from './auth.service';
 import {
   CreateUserDto,
@@ -28,11 +30,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /** Public sign-up, always creates a STUDENT account. */
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   @Post('register')
   register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }
 
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() loginUserDto: LoginUserDto) {
@@ -42,7 +46,7 @@ export class AuthController {
   /** Returns the authenticated user attached by JwtStrategy. */
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  profile(@Req() req: any) {
+  profile(@Req() req: AuthenticatedRequest) {
     return req.user;
   }
 
@@ -74,7 +78,7 @@ export class AuthController {
   update(
     @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     return this.authService.update(id, updateUserDto, String(req.user.id));
   }
@@ -82,7 +86,10 @@ export class AuthController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  remove(@Param('id', ParseMongoIdPipe) id: string, @Req() req: any) {
+  remove(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     return this.authService.remove(id, String(req.user.id));
   }
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import type { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request.interface';
 import { LoansService } from './loans.service';
 import { CreateLoanDto, UpdateLoanDto } from 'src/common/dto/loan.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
@@ -32,7 +33,7 @@ export class LoansController {
   /** Loans of the authenticated user (students included). */
   @Get('me')
   @Roles(UserRole.ADMIN, UserRole.STUDENT)
-  findMine(@Req() req: any) {
+  findMine(@Req() req: AuthenticatedRequest) {
     return this.loansService.findMine(String(req.user.id));
   }
 

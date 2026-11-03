@@ -45,6 +45,15 @@ export class BookController {
     return this.bookService.findAll(searchDto);
   }
 
+  // GET /api/books/inventory
+  // Admin
+  @Get('inventory')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  findInventory() {
+    return this.bookService.findInventory();
+  }
+
   // GET /api/books/:id
   // Authenticated
   @Get(':id')
