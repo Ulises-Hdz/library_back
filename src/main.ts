@@ -6,7 +6,12 @@ import { setupRedoc } from './common/middlewares/redoc.middlewares';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  const origins = (
+    process.env.CORS_ORIGIN ?? 'http://localhost:4200,http://localhost:4210'
+  )
+    .split(',')
+    .map((o) => o.trim());
+  app.enableCors({ origin: origins });
 
   app.setGlobalPrefix('api');
 
@@ -21,8 +26,8 @@ async function bootstrap() {
     }),
   );
 
-  setupRedoc(app)
-  
+  setupRedoc(app);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();

@@ -1,5 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsNotEmpty, IsMongoId } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsMongoId,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class CreateLoanDto {
   @IsMongoId()
@@ -11,4 +15,9 @@ export class CreateLoanDto {
   physical_item_id: string;
 }
 
-export class UpdateLoanDto extends PartialType(CreateLoanDto) {}
+// Only the due date can change: reassigning user or item would break stock consistency.
+export class UpdateLoanDto {
+  @IsOptional()
+  @IsDateString()
+  dueDate?: string;
+}

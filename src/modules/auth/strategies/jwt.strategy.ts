@@ -22,10 +22,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     const user = await this.userModel.findById(payload.id);
 
-    if (!user) throw new UnauthorizedException('Token refers to a non-existent user');
-    if (user.status !== UserStatus.ACTIVE) throw new UnauthorizedException('User is not active');
+    if (!user)
+      throw new UnauthorizedException('Token refers to a non-existent user');
+    if (user.status !== UserStatus.ACTIVE)
+      throw new UnauthorizedException('User is not active');
 
     // Attached to `request.user` and consumed by RolesGuard / controllers.
-    return { id: user._id, email: user.email, role: user.role, full_name: user.full_name };
+    return {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      full_name: user.full_name,
+    };
   }
 }

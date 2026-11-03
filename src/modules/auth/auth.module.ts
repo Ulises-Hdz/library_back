@@ -7,10 +7,14 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserSchema } from 'src/models/user.model';
+import { LoanSchema } from 'src/models/loan.model';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: 'User', schema: UserSchema },
+      { name: 'Loan', schema: LoanSchema },
+    ]),
 
     PassportModule.register({ defaultStrategy: 'jwt' }),
 

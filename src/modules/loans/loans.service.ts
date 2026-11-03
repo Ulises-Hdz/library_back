@@ -10,7 +10,7 @@ import { Model } from 'mongoose';
 import { CreateLoanDto, UpdateLoanDto } from 'src/common/dto/loan.dto';
 import { Loan, LoanStatus } from 'src/models/loan.model';
 import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
-import { User } from 'src/models/user.model';
+import { User, UserStatus } from 'src/models/user.model';
 
 const LOAN_PERIOD_DAYS = 7;
 
@@ -26,17 +26,27 @@ export class LoansService {
   async create(createLoanDto: CreateLoanDto) {
     const { user_id, physical_item_id } = createLoanDto;
 
-    if (!(await this.userModel.exists({ _id: user_id }))) {
+    const user = await this.userModel.findById(user_id).select('status');
+    if (!user) {
       throw new NotFoundException(`User with id "${user_id}" not found.`);
     }
-
-    const item = await this.physicalItemModel.findById(physical_item_id);
-    if (!item) {
-      throw new NotFoundException(
-        `Physical item with id "${physical_item_id}" not found.`,
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new ConflictException(
+        'The user is blocked and cannot borrow books.',
       );
     }
-    if (item.status !== ItemStatus.AVAILABLE) {
+
+    // Atomic claim: only one concurrent request can flip AVAILABLE -> LOANED.
+    const item = await this.physicalItemModel.findOneAndUpdate(
+      { _id: physical_item_id, status: ItemStatus.AVAILABLE },
+      { status: ItemStatus.LOANED },
+    );
+    if (!item) {
+      if (!(await this.physicalItemModel.exists({ _id: physical_item_id }))) {
+        throw new NotFoundException(
+          `Physical item with id "${physical_item_id}" not found.`,
+        );
+      }
       throw new ConflictException(
         'This physical item is not available for loan.',
       );
@@ -47,25 +57,36 @@ export class LoansService {
       const dueDate = new Date(loanDate);
       dueDate.setDate(dueDate.getDate() + LOAN_PERIOD_DAYS);
 
-      const loan = await this.loanModel.create({
+      return await this.loanModel.create({
         user_id,
         physical_item_id,
         loanDate,
         dueDate,
         status: LoanStatus.ACTIVE,
       });
-
-      item.status = ItemStatus.LOANED;
-      await item.save();
-
-      return loan;
     } catch (error) {
+      await this.physicalItemModel.updateOne(
+        { _id: physical_item_id },
+        { status: ItemStatus.AVAILABLE },
+      );
       this.handleDbErrors(error);
     }
   }
 
   async findAll() {
     const loans = await this.loanModel.find();
+    return loans.map((loan) => this.withComputedStatus(loan));
+  }
+
+  async findMine(userId: string) {
+    const loans = await this.loanModel
+      .find({ user_id: userId })
+      .sort({ loanDate: -1 })
+      .populate({
+        path: 'physical_item_id',
+        select: 'book_id barcode',
+        populate: { path: 'book_id', select: 'title author isbn' },
+      });
     return loans.map((loan) => this.withComputedStatus(loan));
   }
 
@@ -79,26 +100,6 @@ export class LoansService {
 
     if (loan.status === LoanStatus.RETURNED) {
       throw new ConflictException('A returned loan cannot be modified.');
-    }
-
-    if (
-      updateLoanDto.user_id &&
-      !(await this.userModel.exists({ _id: updateLoanDto.user_id }))
-    ) {
-      throw new NotFoundException(
-        `User with id "${updateLoanDto.user_id}" not found.`,
-      );
-    }
-
-    if (updateLoanDto.physical_item_id) {
-      const item = await this.physicalItemModel.findById(
-        updateLoanDto.physical_item_id,
-      );
-      if (!item) {
-        throw new NotFoundException(
-          `Physical item with id "${updateLoanDto.physical_item_id}" not found.`,
-        );
-      }
     }
 
     try {

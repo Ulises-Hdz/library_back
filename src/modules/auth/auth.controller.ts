@@ -12,7 +12,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from 'src/common/dto/user.dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  UpdateUserDto,
+} from 'src/common/dto/user.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -70,14 +74,15 @@ export class AuthController {
   update(
     @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,
   ) {
-    return this.authService.update(id, updateUserDto);
+    return this.authService.update(id, updateUserDto, String(req.user.id));
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  remove(@Param('id', ParseMongoIdPipe) id: string) {
-    return this.authService.remove(id);
+  remove(@Param('id', ParseMongoIdPipe) id: string, @Req() req: any) {
+    return this.authService.remove(id, String(req.user.id));
   }
 }
