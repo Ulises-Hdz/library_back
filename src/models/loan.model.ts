@@ -29,3 +29,4 @@ export class Loan extends Document {
 }
 
 export const LoanSchema = SchemaFactory.createForClass(Loan);
+LoanSchema.index({ user_id: 1, status: 1 });

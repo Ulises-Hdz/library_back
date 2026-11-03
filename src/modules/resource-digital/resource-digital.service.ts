@@ -18,7 +18,7 @@ import {
 } from 'src/models/digital-resource.model';
 import { Book } from 'src/models/book.model';
 
-const UPLOAD_DIR = join(process.cwd(), 'uploads', 'digital-resources');
+export const UPLOAD_DIR = join(process.cwd(), 'uploads', 'digital-resources');
 
 const FORMATS: Record<string, { format: DigitalFormat; mime: string }> = {
   '.pdf': { format: DigitalFormat.PDF, mime: 'application/pdf' },

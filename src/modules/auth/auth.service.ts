@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -9,14 +11,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from 'src/common/dto/user.dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  UpdateUserDto,
+} from 'src/common/dto/user.dto';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
-import { User, UserRole } from 'src/models/user.model';
+import { User, UserRole, UserStatus } from 'src/models/user.model';
+import { Loan, LoanStatus } from 'src/models/loan.model';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Loan') private readonly loanModel: Model<Loan>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -46,6 +54,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new ForbiddenException(
+        'Your account is blocked. Contact the library staff.',
+      );
+    }
+
     return {
       user: this.toSafeUser(user),
       token: this.getJwtToken({ id: user._id.toString(), role: user.role }),
@@ -64,14 +78,32 @@ export class AuthService {
     return this.toSafeUser(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    currentUserId?: string,
+  ) {
     const { password, ...rest } = updateUserDto;
+
+    if (id === currentUserId && rest.status === UserStatus.BLOCKED) {
+      throw new ForbiddenException('You cannot block your own account.');
+    }
+    if (rest.status === UserStatus.BLOCKED) {
+      const target = await this.userModel.findById(id);
+      if (target?.role === UserRole.ADMIN) {
+        throw new ForbiddenException(
+          'An administrator account cannot be blocked.',
+        );
+      }
+    }
 
     const updateData: Record<string, any> = { ...rest };
     if (password) updateData.password = bcrypt.hashSync(password, 10);
 
     try {
-      const user = await this.userModel.findByIdAndUpdate(id, updateData, { new: true });
+      const user = await this.userModel.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
       if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
       return this.toSafeUser(user);
@@ -80,7 +112,20 @@ export class AuthService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId?: string) {
+    if (id === currentUserId) {
+      throw new ForbiddenException('You cannot delete your own account.');
+    }
+    const activeLoans = await this.loanModel.countDocuments({
+      user_id: id,
+      status: { $ne: LoanStatus.RETURNED },
+    });
+    if (activeLoans > 0) {
+      throw new ConflictException(
+        'The user has unreturned loans and cannot be deleted.',
+      );
+    }
+
     const user = await this.userModel.findByIdAndDelete(id);
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
@@ -117,12 +162,18 @@ export class AuthService {
   }
 
   private handleDbErrors(error: any): never {
-    if (error instanceof NotFoundException) throw error;
+    if (
+      error instanceof NotFoundException ||
+      error instanceof ForbiddenException
+    )
+      throw error;
 
     if (error.code === 11000) {
       throw new BadRequestException(`User already exists with that email`);
     }
 
-    throw new InternalServerErrorException('Unexpected error, check server logs');
+    throw new InternalServerErrorException(
+      'Unexpected error, check server logs',
+    );
   }
 }

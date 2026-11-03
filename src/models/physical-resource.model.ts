@@ -24,3 +24,4 @@ export class PhysicalItem extends Document {
 }
 
 export const PhysicalItemSchema = SchemaFactory.createForClass(PhysicalItem);
+PhysicalItemSchema.index({ book_id: 1, status: 1 });

@@ -8,14 +8,25 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Book } from 'src/models/book.model';
-import { CreateBookDto, SearchBookDto, UpdateBookDto } from 'src/common/dto/book.dto';
+import {
+  CreateBookDto,
+  SearchBookDto,
+  UpdateBookDto,
+} from 'src/common/dto/book.dto';
 import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
+import { DigitalResource } from 'src/models/digital-resource.model';
+import { unlink } from 'fs/promises';
+import { join } from 'path';
+import { UPLOAD_DIR } from '../resource-digital/resource-digital.service';
 
 @Injectable()
 export class BookService {
   constructor(
     @InjectModel('Book') private readonly booksModel: Model<Book>,
-    @InjectModel('PhysicalItem') private readonly physicalItemModel: Model<PhysicalItem>,
+    @InjectModel('PhysicalItem')
+    private readonly physicalItemModel: Model<PhysicalItem>,
+    @InjectModel('DigitalResource')
+    private readonly digitalResourceModel: Model<DigitalResource>,
   ) {}
 
   async create(createBookDto: CreateBookDto) {
@@ -34,11 +45,12 @@ export class BookService {
       if (title) filter.title = this.regex(title);
       if (author) filter.author = this.regex(author);
       if (category) filter.categories = this.regex(category);
-  
-      return this.booksModel
+
+      return await this.booksModel
         .find(filter)
+        .sort({ title: 1, _id: 1 })
         .skip(offset)
-        .limit(limit)
+        .limit(limit);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       this.handleDBError(error);
@@ -46,19 +58,20 @@ export class BookService {
   }
 
   private regex(text: string) {
-    return { $regex: text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' };
+    return {
+      $regex: text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      $options: 'i',
+    };
   }
 
-  async findOne(id: string) { 
+  async findOne(id: string) {
     try {
       const book = await this.booksModel.findById(id);
-  
+
       if (!book) {
-        throw new NotFoundException(
-          `Book with id "${id}" not found.`,
-        );
+        throw new NotFoundException(`Book with id "${id}" not found.`);
       }
-  
+
       return book;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
@@ -68,11 +81,9 @@ export class BookService {
 
   async update(id: string, updateBookDto: UpdateBookDto) {
     try {
-      const book = await this.booksModel.findByIdAndUpdate(
-        id,
-        updateBookDto,
-        { new: true },
-      );
+      const book = await this.booksModel.findByIdAndUpdate(id, updateBookDto, {
+        new: true,
+      });
       if (!book) {
         throw new NotFoundException(`Book with id "${id}" not found.`);
       }
@@ -95,10 +106,21 @@ export class BookService {
           'The book cannot be deleted: it has active loans.',
         );
       }
+      await this.physicalItemModel.deleteMany({ book_id: book._id });
+      const digital = await this.digitalResourceModel.findOneAndDelete({
+        book_id: book._id,
+      });
+      if (digital) {
+        await unlink(join(UPLOAD_DIR, digital.fileUrl)).catch(() => undefined);
+      }
       await book.deleteOne();
       return { message: `Book "${book.title}" deleted successfully.` };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) throw error;
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      )
+        throw error;
       this.handleDBError(error);
     }
   }

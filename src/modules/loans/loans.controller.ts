@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { LoansService } from './loans.service';
 import { CreateLoanDto, UpdateLoanDto } from 'src/common/dto/loan.dto';
@@ -26,6 +27,13 @@ export class LoansController {
   @Post()
   create(@Body() createLoanDto: CreateLoanDto) {
     return this.loansService.create(createLoanDto);
+  }
+
+  /** Loans of the authenticated user (students included). */
+  @Get('me')
+  @Roles(UserRole.ADMIN, UserRole.STUDENT)
+  findMine(@Req() req: any) {
+    return this.loansService.findMine(String(req.user.id));
   }
 
   @Get()

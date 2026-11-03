@@ -12,7 +12,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BookService } from './book.service';
-import { CreateBookDto, SearchBookDto, UpdateBookDto } from 'src/common/dto/book.dto';
+import {
+  CreateBookDto,
+  SearchBookDto,
+  UpdateBookDto,
+} from 'src/common/dto/book.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
