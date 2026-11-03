@@ -35,6 +35,13 @@ export class PhysicalItemController {
     return this.physicalItemService.create(createDto);
   }
 
+  // GET /api/physical-items/book/:bookId/available
+  // Autenticado
+  @Get('book/:bookId/available')
+  getAvailableItems(@Param('bookId', ParseMongoIdPipe) bookId: string) {
+    return this.physicalItemService.getAvailableItems(bookId);
+  }
+
   // GET /api/physical-items/book/:bookId
   // Autenticado
   @Get('book/:bookId')

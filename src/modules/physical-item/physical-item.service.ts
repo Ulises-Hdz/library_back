@@ -64,6 +64,17 @@ export class PhysicalItemService {
     };
   }
 
+  async getAvailableItems(bookId: string): Promise<PhysicalItem[]> {
+    if (!(await this.bookModel.exists({ _id: bookId }))) {
+      throw new NotFoundException(`Book with id "${bookId}" not found.`);
+    }
+
+    return this.physicalItemModel.find({
+      book_id: bookId,
+      status: ItemStatus.AVAILABLE,
+    });
+  }
+
   async updateStatus(id: string, dto: UpdatePhysicalItemStatusDto) {
     const item = await this.physicalItemModel.findById(id);
     if (!item) {
