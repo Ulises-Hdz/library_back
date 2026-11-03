@@ -8,6 +8,8 @@ import { BookModule } from './modules/book/book.module';
 import { PhysicalItemModule } from './modules/physical-item/physical-item.module';
 import { ResourceDigitalModule } from './modules/resource-digital/resource-digital.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -28,11 +30,14 @@ import { AuthModule } from './modules/auth/auth.module';
       }),
     }),
 
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
+
     BookModule,
     PhysicalItemModule,
     ResourceDigitalModule,
     LoansModule,
     AuthModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

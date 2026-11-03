@@ -1,6 +1,13 @@
 import { PaginationDto } from './pagination.dto';
 import { PartialType } from '@nestjs/mapped-types';
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsArray, IsUrl } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateBookDto {
   @IsString()

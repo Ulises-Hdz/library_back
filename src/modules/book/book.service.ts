@@ -8,6 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Book } from 'src/models/book.model';
+import { asMongoError } from 'src/common/utils/db-error';
 import {
   CreateBookDto,
   SearchBookDto,
@@ -55,6 +56,43 @@ export class BookService {
       if (error instanceof NotFoundException) throw error;
       this.handleDBError(error);
     }
+  }
+
+  /** Books with physical stock and digital availability in three queries (no per-book requests). */
+  async findInventory() {
+    const [books, stock, digital] = await Promise.all([
+      this.booksModel.find().sort({ title: 1, _id: 1 }).lean(),
+      this.physicalItemModel.aggregate<{
+        _id: unknown;
+        total: number;
+        available: number;
+      }>([
+        {
+          $group: {
+            _id: '$book_id',
+            total: { $sum: 1 },
+            available: {
+              $sum: {
+                $cond: [{ $eq: ['$status', ItemStatus.AVAILABLE] }, 1, 0],
+              },
+            },
+          },
+        },
+      ]),
+      this.digitalResourceModel.find().select('book_id').lean(),
+    ]);
+
+    const stockByBook = new Map(stock.map((s) => [String(s._id), s]));
+    const digitalIds = new Set(digital.map((d) => String(d.book_id)));
+
+    return books.map((book) => {
+      const s = stockByBook.get(String(book._id));
+      return {
+        ...book,
+        stock: { total: s?.total ?? 0, available: s?.available ?? 0 },
+        digital: digitalIds.has(String(book._id)),
+      };
+    });
   }
 
   private regex(text: string) {
@@ -125,11 +163,12 @@ export class BookService {
     }
   }
 
-  private handleDBError(error: any): never {
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyValue)[0];
+  private handleDBError(error: unknown): never {
+    const { code, keyValue = {} } = asMongoError(error);
+    if (code === 11000) {
+      const field = Object.keys(keyValue)[0];
       throw new BadRequestException(
-        `A book with that ${field} already exists: "${error.keyValue[field]}".`,
+        `A book with that ${field} already exists: "${String(keyValue[field])}".`,
       );
     }
     console.error(error);
