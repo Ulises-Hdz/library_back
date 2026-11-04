@@ -30,6 +30,9 @@ API Backend para el sistema de biblioteca desarrollada con **NestJS** y **MongoD
    ```env
    PORT=3000
    MONGO_URI=mongodb://localhost:27017/database
+   JWT_SECRET=una_clave_secreta_larga_y_segura
+   JWT_EXPIRES_IN=2h
+   CORS_ORIGIN=http://localhost:4200,http://localhost:4210
    ```
 
 ---
@@ -81,6 +84,9 @@ Si prefieres correr `npm run start:dev` directamente en tu máquina física y us
    ```env
    PORT=3000
    MONGO_URI=mongodb://localhost:27017/database
+   JWT_SECRET=una_clave_secreta_larga_y_segura
+   JWT_EXPIRES_IN=2h
+   CORS_ORIGIN=http://localhost:4200,http://localhost:4210
    ```
 
 4. **Iniciar la aplicación en modo desarrollo:**
@@ -95,6 +101,10 @@ Si prefieres correr `npm run start:dev` directamente en tu máquina física y us
 - **URL base:** `http://localhost:3000/api`
 - Todas las rutas están bajo el prefijo global `/api`.
 - Se cuenta con validación global (`ValidationPipe`) que sanitiza automáticamente payloads entrantes (`whitelist` y transformación automática de tipos).
+- **Autenticación y roles:** JWT Bearer token (`Authorization: Bearer <token>`). Los roles disponibles son `STUDENT` y `ADMIN`; el registro público (`POST /auth/register`) siempre crea un `STUDENT`, mientras que un `ADMIN` solo puede ser creado por otro `ADMIN` autenticado (`POST /auth/admin`).
+- **Seguridad:** cabeceras HTTP reforzadas con `helmet` y CORS restringido a los orígenes definidos en `CORS_ORIGIN`.
+- **Rate limiting:** 300 solicitudes/minuto por cliente de forma global; `POST /auth/register` y `POST /auth/login` están limitados a 10 solicitudes/minuto. Al exceder el límite se responde `429 Too Many Requests`.
+- **Documentación interactiva:** disponible en `http://localhost:3000/docs` (Redoc), generada a partir de [doc.yml](./doc.yml).
 
 ---
 
@@ -127,15 +137,25 @@ npm run test
 ```text
 src/
 ├── common/             # Elementos transversales compartidos
+│   ├── decorators/     # Decoradores personalizados (ej. @Roles)
 │   ├── dto/            # DTOs globales (ej. PaginationDto)
 │   ├── filters/        # Filtros de excepciones globales
-│   ├── guards/         # Guards de seguridad y autenticación
+│   ├── guards/         # Guards de seguridad y autenticación (JWT, roles)
 │   ├── interceptors/   # Interceptores de respuesta y logging
-│   └── pipes/          # Pipes personalizados (ej. ParseMongoIdPipe)
+│   ├── interfaces/     # Tipos compartidos (ej. AuthenticatedRequest)
+│   ├── middlewares/    # Middlewares (ej. documentación con Redoc)
+│   ├── pipes/          # Pipes personalizados (ej. ParseMongoIdPipe)
+│   └── utils/          # Utilidades compartidas (ej. manejo de errores de Mongo)
 ├── config/             # Configuración del entorno y validación Joi
 │   ├── env.config.ts
 │   └── joi.validation.ts
-├── modules/            # Módulos de dominio de la biblioteca (books, users, etc.)
+├── models/             # Esquemas de Mongoose (Book, User, Loan, PhysicalItem, DigitalResource)
+├── modules/             # Módulos de dominio de la biblioteca
+│   ├── auth/            # Registro, login, perfil y gestión de usuarios (JWT)
+│   ├── book/            # CRUD de libros e inventario
+│   ├── loans/           # Préstamos y devoluciones
+│   ├── physical-item/   # Copias físicas y su disponibilidad
+│   └── resource-digital/ # Recursos digitales (PDF/EPUB)
 ├── app.module.ts       # Módulo raíz
 └── main.ts             # Punto de entrada y configuración global de la app
 ```

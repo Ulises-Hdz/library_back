@@ -8,6 +8,12 @@ info:
     Authentication and roles are implemented with JWT Bearer tokens.
     Public registration always creates `STUDENT` users; `ADMIN` users can
     only be created by another authenticated admin.
+
+    **Security & rate limiting**: responses include `helmet` security headers
+    and CORS is restricted to the origins listed in `CORS_ORIGIN`. All routes
+    are rate-limited to 300 requests/minute per client; `POST /auth/register`
+    and `POST /auth/login` are further limited to 10 requests/minute. Exceeding
+    a limit returns `429 Too Many Requests`.
 servers:
   - url: http://localhost:3000/api
 tags:
@@ -57,11 +63,14 @@ paths:
                 statusCode: 400
                 message: User already exists with that email
                 error: Bad Request
+        '429': { $ref: '#/components/responses/TooManyRequests' }
   /auth/login:
     post:
       tags: [Users / Auth]
       summary: Authenticate a user
-      description: Returns the authenticated user and a JWT Bearer token.
+      description: |
+        Returns the authenticated user and a JWT Bearer token.
+        Fails with 403 if the account is `BLOCKED`.
       requestBody:
         required: true
         content:
@@ -95,6 +104,16 @@ paths:
                 statusCode: 401
                 message: Invalid credentials
                 error: Unauthorized
+        '403':
+          description: The account is blocked
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example:
+                statusCode: 403
+                message: Your account is blocked. Contact the library staff.
+                error: Forbidden
+        '429': { $ref: '#/components/responses/TooManyRequests' }
   /auth/profile:
     get:
       tags: [Users / Auth]
@@ -111,6 +130,7 @@ paths:
                 id: 67052b3773fa6065cc7f1e10
                 email: juan.perez@library.dev
                 role: STUDENT
+                full_name: Juan Perez
         '401': { $ref: '#/components/responses/Unauthorized' }
   /auth/admin:
     post:
@@ -208,7 +228,10 @@ paths:
     patch:
       tags: [Users / Auth]
       summary: Update a user
-      description: Protected endpoint. Only an authenticated `ADMIN` can update users.
+      description: |
+        Protected endpoint. Only an authenticated `ADMIN` can update users.
+        Responds 403 if an admin tries to block their own account or to
+        block another `ADMIN` account (`status=BLOCKED`).
       security:
         - bearerAuth: []
       requestBody:
@@ -241,7 +264,10 @@ paths:
     delete:
       tags: [Users / Auth]
       summary: Delete a user
-      description: Protected endpoint. Only an authenticated `ADMIN` can delete users.
+      description: |
+        Protected endpoint. Only an authenticated `ADMIN` can delete users.
+        Responds 403 if an admin tries to delete their own account, and 409
+        if the user still has unreturned loans.
       security:
         - bearerAuth: []
       responses:
@@ -261,6 +287,7 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 
   /books:
     post:
@@ -296,6 +323,25 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Book' }
+  /books/inventory:
+    get:
+      tags: [Books]
+      summary: Full inventory with stock and digital availability (Admin)
+      description: |
+        Returns every book along with its physical stock (`total`/`available`
+        copies) and whether it has a linked digital resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Inventory list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/BookInventoryItem' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
   /books/{id}:
     parameters:
       - { $ref: '#/components/parameters/MongoId' }
@@ -533,6 +579,24 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Loan' }
+  /loans/me:
+    get:
+      tags: [Loans]
+      summary: Loans of the authenticated user (Authenticated)
+      description: |
+        Accessible to `STUDENT` and `ADMIN`. Returns the caller's own loans,
+        most recent first, with the physical item and its book populated.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/LoanWithDetails' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
   /loans/{id}:
     parameters:
       - { $ref: '#/components/parameters/MongoId' }
@@ -631,6 +695,15 @@ components:
             statusCode: 409
             message: Conflict with the current state of the resource
             error: Conflict
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example:
+            statusCode: 429
+            message: ThrottlerException Too Many Requests
+            error: Too Many Requests
   securitySchemes:
     bearerAuth:
       type: http
@@ -696,6 +769,7 @@ components:
           type: string
           enum: [STUDENT, ADMIN]
           example: STUDENT
+        full_name: { type: string, example: Juan Perez }
     AuthResponse:
       type: object
       properties:
@@ -740,6 +814,20 @@ components:
             _id: { type: string }
             createdAt: { type: string, format: date-time }
             updatedAt: { type: string, format: date-time }
+    BookInventoryItem:
+      allOf:
+        - $ref: '#/components/schemas/Book'
+        - type: object
+          properties:
+            stock:
+              type: object
+              properties:
+                total: { type: integer, example: 5 }
+                available: { type: integer, example: 3 }
+            digital:
+              type: boolean
+              description: Whether the book has a linked digital resource.
+              example: true
     DigitalResource:
       type: object
       properties:
@@ -785,3 +873,21 @@ components:
           enum: [ACTIVE, RETURNED, OVERDUE]
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    LoanWithDetails:
+      allOf:
+        - $ref: '#/components/schemas/Loan'
+        - type: object
+          description: Same as Loan, but `physical_item_id` is populated.
+          properties:
+            physical_item_id:
+              type: object
+              properties:
+                _id: { type: string }
+                barcode: { type: string }
+                book_id:
+                  type: object
+                  properties:
+                    _id: { type: string }
+                    title: { type: string }
+                    author: { type: string }
+                    isbn: { type: string }
