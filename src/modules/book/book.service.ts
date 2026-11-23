@@ -19,6 +19,7 @@ import { DigitalResource } from 'src/models/digital-resource.model';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { UPLOAD_DIR } from '../resource-digital/resource-digital.service';
+import type { UploadedFileData } from 'src/common/interfaces/uploaded-file.interface';
 
 @Injectable()
 export class BookService {
@@ -160,6 +161,72 @@ export class BookService {
       )
         throw error;
       this.handleDBError(error);
+    }
+  }
+
+  async upload(bookId: string, file: UploadedFileData) {
+    if (!file) {
+      throw new BadRequestException('The file is required.');
+    }
+
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedMimes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        'Only JPG, PNG, or WEBP images are allowed.',
+      );
+    }
+
+    const ext = file.originalname.split('.').pop()?.toLowerCase() || '';
+    const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+    if (!allowedExts.includes(ext)) {
+      throw new BadRequestException('Invalid file extension.');
+    }
+
+    const book = await this.booksModel.findById(bookId);
+    if (!book) {
+      throw new NotFoundException(`Book with id "${bookId}" not found.`);
+    }
+
+    const { mkdir, writeFile } = await import('fs/promises');
+    const { join } = await import('path');
+    const { randomUUID } = await import('crypto');
+    const sharp = await import('sharp');
+
+    const uploadsDir = join(process.cwd(), 'uploads', 'covers');
+    await mkdir(uploadsDir, { recursive: true });
+
+    const filename = `${randomUUID()}.webp`;
+    const filepath = join(uploadsDir, filename);
+
+    try {
+      await sharp.default(file.buffer)
+        .resize(300, 450, {
+          fit: 'cover',
+          position: 'center',
+        })
+        .webp({ quality: 80 })
+        .toFile(filepath);
+
+      const coverUrl = `/covers/${filename}`;
+      book.coverUrl = coverUrl;
+      await book.save();
+
+      return {
+        success: true,
+        message: 'Cover uploaded successfully',
+        data: {
+          coverUrl,
+          book_id: bookId,
+          uploadedAt: new Date().toISOString(),
+          size: file.size,
+          mime: file.mimetype,
+        },
+      };
+    } catch (error) {
+      const { unlink } = await import('fs/promises');
+      await unlink(filepath).catch(() => undefined);
+      console.error('Error processing cover:', error);
+      throw new BadRequestException('Error processing image.');
     }
   }
 

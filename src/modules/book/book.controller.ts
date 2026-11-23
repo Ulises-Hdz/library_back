@@ -10,7 +10,12 @@ import {
   HttpStatus,
   Patch,
   UseGuards,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { BookService } from './book.service';
 import {
   CreateBookDto,
@@ -22,6 +27,9 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/models/user.model';
+import type { UploadedFileData } from 'src/common/interfaces/uploaded-file.interface';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 @Controller('books')
 @UseGuards(JwtAuthGuard)
@@ -81,5 +89,27 @@ export class BookController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id', ParseMongoIdPipe) id: string) {
     return this.bookService.remove(id);
+  }
+
+  // POST /api/books/:id/cover (multipart/form-data: file)
+  // Admin
+  @Post(':id/cover')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: MAX_FILE_SIZE },
+    }),
+  )
+  uploadCover(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @UploadedFile() file: UploadedFileData,
+  ) {
+    if (!file) {
+      throw new BadRequestException('The file is required.');
+    }
+    return this.bookService.upload(id, file);
   }
 }
