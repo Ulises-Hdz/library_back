@@ -3,74 +3,80 @@ info:
   title: Library API
   version: 1.0.0
   description: |
-    Library API (books, digital resources and physical inventory).
-    All routes use the global `/api` prefix.
-    Authentication and roles are implemented with JWT Bearer tokens.
-    Public registration always creates `STUDENT` users; `ADMIN` users can
-    only be created by another authenticated admin.
+    API de gestión de biblioteca (libros, recursos digitales, ejemplares físicos y préstamos).
+    Todas las rutas usan el prefijo global `/api`.
 
-    **Security & rate limiting**: responses include `helmet` security headers
-    and CORS is restricted to the origins listed in `CORS_ORIGIN`. All routes
-    are rate-limited to 300 requests/minute per client; `POST /auth/register`
-    and `POST /auth/login` are further limited to 10 requests/minute. Exceeding
-    a limit returns `429 Too Many Requests`.
+    **Autenticación**: JWT Bearer token. Los endpoints marcados con requieren token válido;
+    los marcados con ADMIN requieren además el rol `ADMIN`.
+
+    **Rate limiting**: `POST /auth/register` y `POST /auth/login` están limitados a
+    10 peticiones / minuto por cliente. El resto de rutas permiten hasta 300 peticiones / minuto.
+    Superar el límite devuelve `429 Too Many Requests`.
 servers:
   - url: http://localhost:3000/api
-tags:
-  - name: Users / Auth
-  - name: Books
-  - name: Digital resources
-  - name: Physical items
-  - name: Loans
+    description: Servidor de desarrollo local
 
+tags:
+  - name: Auth
+    description: Registro, login y gestión de usuarios
+  - name: Books
+    description: Catálogo de libros y portadas
+  - name: Digital Resources
+    description: Archivos PDF / EPUB vinculados a libros
+  - name: Physical Items
+    description: Ejemplares físicos de libros en estantería
+  - name: Loans
+    description: Préstamos y devoluciones
+
+# ─────────────────────────────────────────────
+#  PATHS
+# ─────────────────────────────────────────────
 paths:
+
+  # ── AUTH ──────────────────────────────────
   /auth/register:
     post:
-      tags: [Users / Auth]
-      summary: Register a student account
-      description: Public endpoint. Always creates a `STUDENT` user.
+      tags: [Auth]
+      summary: Registro público (crea cuenta STUDENT)
+      description: |
+        Endpoint público. Siempre crea un usuario con rol `STUDENT`.
+        Limitado a 10 peticiones por minuto.
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/CreateUser' }
             example:
-              full_name: Juan Perez
+              full_name: Juan Pérez
               email: juan.perez@library.dev
               password: Password123
       responses:
         '201':
-          description: Student created successfully
+          description: Usuario creado correctamente
           content:
             application/json:
               schema: { $ref: '#/components/schemas/AuthResponse' }
               example:
                 user:
                   _id: 67052b3773fa6065cc7f1e10
-                  full_name: Juan Perez
+                  full_name: Juan Pérez
                   email: juan.perez@library.dev
                   role: STUDENT
                   status: ACTIVE
                   createdAt: '2026-10-08T14:26:02.295Z'
                   updatedAt: '2026-10-08T14:26:02.295Z'
                 token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.student
-        '400':
-          description: Invalid payload or duplicated email
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-              example:
-                statusCode: 400
-                message: User already exists with that email
-                error: Bad Request
+        '400': { $ref: '#/components/responses/BadRequest' }
         '429': { $ref: '#/components/responses/TooManyRequests' }
+
   /auth/login:
     post:
-      tags: [Users / Auth]
-      summary: Authenticate a user
+      tags: [Auth]
+      summary: Login
       description: |
-        Returns the authenticated user and a JWT Bearer token.
-        Fails with 403 if the account is `BLOCKED`.
+        Devuelve el usuario autenticado y un JWT Bearer token.
+        Falla con `403` si la cuenta está en estado `BLOCKED`.
+        Limitado a 10 peticiones por minuto.
       requestBody:
         required: true
         content:
@@ -81,22 +87,12 @@ paths:
               password: Password123
       responses:
         '200':
-          description: Authenticated successfully
+          description: Autenticado correctamente
           content:
             application/json:
               schema: { $ref: '#/components/schemas/AuthResponse' }
-              example:
-                user:
-                  _id: 67052b3773fa6065cc7f1e10
-                  full_name: Juan Perez
-                  email: juan.perez@library.dev
-                  role: STUDENT
-                  status: ACTIVE
-                  createdAt: '2026-10-08T14:26:02.295Z'
-                  updatedAt: '2026-10-08T14:26:02.295Z'
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.student
         '401':
-          description: Invalid credentials
+          description: Credenciales inválidas
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -105,7 +101,7 @@ paths:
                 message: Invalid credentials
                 error: Unauthorized
         '403':
-          description: The account is blocked
+          description: Cuenta bloqueada
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -114,15 +110,16 @@ paths:
                 message: Your account is blocked. Contact the library staff.
                 error: Forbidden
         '429': { $ref: '#/components/responses/TooManyRequests' }
+
   /auth/profile:
     get:
-      tags: [Users / Auth]
-      summary: Get the authenticated user's profile
+      tags: [Auth]
+      summary: Perfil del usuario autenticado
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Authenticated user
+          description: Datos del usuario autenticado (extraídos del token JWT)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Profile' }
@@ -130,13 +127,14 @@ paths:
                 id: 67052b3773fa6065cc7f1e10
                 email: juan.perez@library.dev
                 role: STUDENT
-                full_name: Juan Perez
+                full_name: Juan Pérez
         '401': { $ref: '#/components/responses/Unauthorized' }
+
   /auth/admin:
     post:
-      tags: [Users / Auth]
-      summary: Create an admin user
-      description: Protected endpoint. Only an authenticated `ADMIN` can create another admin.
+      tags: [Auth]
+      summary: Crear cuenta ADMIN
+      description: Solo un `ADMIN` autenticado puede crear otro `ADMIN`.
       security:
         - bearerAuth: []
       requestBody:
@@ -145,38 +143,28 @@ paths:
           application/json:
             schema: { $ref: '#/components/schemas/CreateUser' }
             example:
-              full_name: Maria Admin
+              full_name: María Admin
               email: maria.admin@library.dev
               password: AdminPass123
       responses:
         '201':
-          description: Admin created successfully
+          description: Admin creado correctamente
           content:
             application/json:
               schema: { $ref: '#/components/schemas/AuthResponse' }
-              example:
-                user:
-                  _id: 67052b6573fa6065cc7f1e11
-                  full_name: Maria Admin
-                  email: maria.admin@library.dev
-                  role: ADMIN
-                  status: ACTIVE
-                  createdAt: '2026-10-08T14:26:49.657Z'
-                  updatedAt: '2026-10-08T14:26:49.657Z'
-                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.admin
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+
   /auth:
     get:
-      tags: [Users / Auth]
-      summary: List all users
-      description: Protected endpoint. Only an authenticated `ADMIN` can access it.
+      tags: [Auth]
+      summary: Listar todos los usuarios
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: List of users
+          description: Array de usuarios
           content:
             application/json:
               schema:
@@ -184,54 +172,39 @@ paths:
                 items: { $ref: '#/components/schemas/User' }
               example:
                 - _id: 67052b3773fa6065cc7f1e10
-                  full_name: Juan Perez
+                  full_name: Juan Pérez
                   email: juan.perez@library.dev
                   role: STUDENT
                   status: ACTIVE
                   createdAt: '2026-10-08T14:26:02.295Z'
                   updatedAt: '2026-10-08T14:26:02.295Z'
-                - _id: 67052b6573fa6065cc7f1e11
-                  full_name: Maria Admin
-                  email: maria.admin@library.dev
-                  role: ADMIN
-                  status: ACTIVE
-                  createdAt: '2026-10-08T14:26:49.657Z'
-                  updatedAt: '2026-10-08T14:26:49.657Z'
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+
   /auth/{id}:
     parameters:
       - { $ref: '#/components/parameters/MongoId' }
     get:
-      tags: [Users / Auth]
-      summary: Get a user by id
-      description: Protected endpoint. Only an authenticated `ADMIN` can access it.
+      tags: [Auth]
+      summary: Obtener usuario por ID
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: User found
+          description: Usuario encontrado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/User' }
-              example:
-                _id: 67052b3773fa6065cc7f1e10
-                full_name: Juan Perez
-                email: juan.perez@library.dev
-                role: STUDENT
-                status: ACTIVE
-                createdAt: '2026-10-08T14:26:02.295Z'
-                updatedAt: '2026-10-08T14:26:02.295Z'
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
     patch:
-      tags: [Users / Auth]
-      summary: Update a user
+      tags: [Auth]
+      summary: Actualizar usuario
       description: |
-        Protected endpoint. Only an authenticated `ADMIN` can update users.
-        Responds 403 if an admin tries to block their own account or to
-        block another `ADMIN` account (`status=BLOCKED`).
+        Permite actualizar `full_name`, `email`, `password` y `status`.
+        Devuelve `403` si el admin intenta bloquearse a sí mismo o bloquear
+        a otro `ADMIN`.
       security:
         - bearerAuth: []
       requestBody:
@@ -240,160 +213,227 @@ paths:
           application/json:
             schema: { $ref: '#/components/schemas/UpdateUser' }
             example:
-              full_name: Juan Perez Gomez
-              password: NewPassword123
-              status: ACTIVE
+              full_name: Juan Pérez Gómez
+              status: BLOCKED
       responses:
         '200':
-          description: User updated
+          description: Usuario actualizado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/User' }
-              example:
-                _id: 67052b3773fa6065cc7f1e10
-                full_name: Juan Perez Gomez
-                email: juan.perez@library.dev
-                role: STUDENT
-                status: ACTIVE
-                createdAt: '2026-10-08T14:26:02.295Z'
-                updatedAt: '2026-10-08T14:30:10.112Z'
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
     delete:
-      tags: [Users / Auth]
-      summary: Delete a user
+      tags: [Auth]
+      summary: Eliminar usuario
       description: |
-        Protected endpoint. Only an authenticated `ADMIN` can delete users.
-        Responds 403 if an admin tries to delete their own account, and 409
-        if the user still has unreturned loans.
+        Devuelve `403` si el admin intenta eliminarse a sí mismo.
+        Devuelve `409` si el usuario aún tiene préstamos activos.
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Deleted user
+          description: Usuario eliminado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/User' }
-              example:
-                _id: 67052b3773fa6065cc7f1e10
-                full_name: Juan Perez
-                email: juan.perez@library.dev
-                role: STUDENT
-                status: ACTIVE
-                createdAt: '2026-10-08T14:26:02.295Z'
-                updatedAt: '2026-10-08T14:26:02.295Z'
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+  # ── BOOKS ─────────────────────────────────
   /books:
     post:
       tags: [Books]
-      summary: Register a book (Admin)
+      summary: Registrar un libro
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/CreateBook' }
+            example:
+              isbn: '9780132350884'
+              title: Clean Code
+              author: Robert C. Martin
+              publisher: Prentice Hall
+              publicationYear: 2008
+              categories: [Programming, Software Engineering]
+              description: A handbook of agile software craftsmanship.
       responses:
         '201':
-          description: Book creado
+          description: Libro creado correctamente
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Book' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
     get:
       tags: [Books]
-      summary: Book search engine (Authenticated)
-      description: Filters use partial, case-insensitive matching.
+      summary: Buscar / listar libros
+      description: |
+        Motor de búsqueda con filtros opcionales. Todos los filtros usan
+        coincidencia parcial e insensible a mayúsculas.
+      security:
+        - bearerAuth: []
       parameters:
-        - { name: title, in: query, schema: { type: string } }
-        - { name: author, in: query, schema: { type: string } }
-        - { name: category, in: query, schema: { type: string } }
-        - { name: limit, in: query, schema: { type: integer, minimum: 1, default: 10 } }
-        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: title,    in: query, schema: { type: string },  description: Filtrar por título (parcial) }
+        - { name: author,   in: query, schema: { type: string },  description: Filtrar por autor (parcial) }
+        - { name: category, in: query, schema: { type: string },  description: Filtrar por categoría (parcial) }
+        - { name: limit,  in: query, schema: { type: integer, minimum: 1,  default: 10 }, description: Número máximo de resultados }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0  }, description: Desplazamiento para paginación }
       responses:
         '200':
-          description: List of books
+          description: Lista de libros
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Book' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
   /books/inventory:
     get:
       tags: [Books]
-      summary: Full inventory with stock and digital availability (Admin)
+      summary: Inventario completo con stock
       description: |
-        Returns every book along with its physical stock (`total`/`available`
-        copies) and whether it has a linked digital resource.
+        Devuelve cada libro junto con su stock de ejemplares físicos
+        (`total` / `available`) y si tiene un recurso digital asociado.
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Inventory list
+          description: Inventario de libros
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/BookInventoryItem' }
+              example:
+                - _id: 665f1c2e8a1b2c3d4e5f6a7b
+                  isbn: '9780132350884'
+                  title: Clean Code
+                  author: Robert C. Martin
+                  publisher: Prentice Hall
+                  publicationYear: 2008
+                  categories: [Programming]
+                  stock:
+                    total: 5
+                    available: 3
+                  digital: true
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+
   /books/{id}:
     parameters:
       - { $ref: '#/components/parameters/MongoId' }
     get:
       tags: [Books]
-      summary: Book details (Authenticated)
+      summary: Detalle de un libro
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Book
+          description: Libro encontrado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Book' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Books]
-      summary: Update a book (Admin)
-      description: All fields are optional. Returns the updated book.
+      summary: Actualizar un libro
+      description: Todos los campos son opcionales. Devuelve el libro actualizado.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/UpdateBook' }
+            example:
+              description: Updated description.
+              publicationYear: 2009
       responses:
         '200':
-          description: Book updated
+          description: Libro actualizado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Book' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
     delete:
       tags: [Books]
-      summary: Delete a book (Admin)
-      description: Responds 409 if any physical item of the book is on loan.
+      summary: Eliminar un libro
+      description: Devuelve `409` si algún ejemplar físico del libro está en préstamo.
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Book eliminado
+          description: Libro eliminado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Message' }
+              example:
+                message: Book deleted successfully
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+  /books/{id}/cover:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
+    post:
+      tags: [Books]
+      summary: Subir portada de un libro
+      description: |
+        Acepta imágenes (JPG, PNG, WebP…) con un tamaño máximo de **5 MB**.
+        Almacena el archivo y actualiza el campo `coverUrl` del libro.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Imagen de portada (máx. 5 MB)
+      responses:
+        '201':
+          description: Portada subida correctamente
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Book' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ── DIGITAL RESOURCES ─────────────────────
   /digital-resources:
     post:
-      tags: [Digital resources]
-      summary: Upload a PDF/EPUB and link it to a book (Admin)
+      tags: [Digital Resources]
+      summary: Subir recurso digital (PDF / EPUB)
       description: |
-        Maximum 100 MB. Only `.pdf` and `.epub`; the content is also validated.
-        A book can only have one digital resource.
+        Acepta archivos `.pdf` y `.epub`. Tamaño máximo **100 MB**.
+        Un libro solo puede tener un recurso digital; una segunda subida devuelve `409`.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -402,95 +442,131 @@ paths:
               type: object
               required: [file, book_id]
               properties:
-                file: { type: string, format: binary }
-                book_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+                file:
+                  type: string
+                  format: binary
+                  description: Archivo PDF o EPUB (máx. 100 MB)
+                book_id:
+                  type: string
+                  example: 665f1c2e8a1b2c3d4e5f6a7b
+                  description: ID del libro al que pertenece el recurso
                 onlineReadOnly:
                   type: boolean
                   default: true
-                  description: If true the file is shown inline; if false it is downloaded.
+                  description: |
+                    `true` → el archivo se sirve inline (lectura online).
+                    `false` → se sirve como descarga (attachment).
       responses:
         '201':
-          description: Resource created
+          description: Recurso digital creado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/DigitalResource' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
+
   /digital-resources/book/{bookId}:
     get:
-      tags: [Digital resources]
-      summary: Get the digital file of a book (Authenticated)
+      tags: [Digital Resources]
+      summary: Obtener / descargar el archivo digital de un libro
+      description: |
+        Transmite el archivo directamente. El encabezado `Content-Disposition`
+        será `inline` si `onlineReadOnly=true`, o `attachment` si es `false`.
+      security:
+        - bearerAuth: []
       parameters:
-        - { name: bookId, in: path, required: true, schema: { type: string } }
+        - name: bookId
+          in: path
+          required: true
+          schema: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+          description: ID del libro
       responses:
         '200':
-          description: File (inline or attachment depending on `onlineReadOnly`)
+          description: Archivo binario (PDF o EPUB)
           content:
             application/pdf:
               schema: { type: string, format: binary }
             application/epub+zip:
               schema: { type: string, format: binary }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
   /digital-resources/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
     delete:
-      tags: [Digital resources]
-      summary: Delete a digital resource and its file (Admin)
-      parameters:
-        - { $ref: '#/components/parameters/MongoId' }
+      tags: [Digital Resources]
+      summary: Eliminar recurso digital y su archivo
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Resource deleted
+          description: Recurso digital eliminado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Message' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 
+  # ── PHYSICAL ITEMS ────────────────────────
   /physical-items:
     post:
-      tags: [Physical items]
-      summary: Register a physical copy (Admin)
+      tags: [Physical Items]
+      summary: Registrar ejemplar físico
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [book_id, barcode]
-              properties:
-                book_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
-                barcode: { type: string, example: LIB-000123 }
-                shelfLocation: { type: string, example: A-3 }
+            schema: { $ref: '#/components/schemas/CreatePhysicalItem' }
+            example:
+              book_id: 665f1c2e8a1b2c3d4e5f6a7b
+              barcode: LIB-000123
+              shelfLocation: A-3
       responses:
         '201':
-          description: Physical item created
+          description: Ejemplar físico creado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/PhysicalItem' }
         '400':
-          description: Invalid data or duplicated barcode
+          description: Datos inválidos o código de barras duplicado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+
   /physical-items/book/{bookId}:
     get:
-      tags: [Physical items]
-      summary: Copy availability of a book (Authenticated)
+      tags: [Physical Items]
+      summary: Disponibilidad de ejemplares de un libro
+      description: Devuelve el recuento total y disponible de ejemplares, agrupado por estado.
+      security:
+        - bearerAuth: []
       parameters:
-        - { name: bookId, in: path, required: true, schema: { type: string } }
+        - name: bookId
+          in: path
+          required: true
+          schema: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
       responses:
         '200':
-          description: Physical item count
+          description: Resumen de disponibilidad
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  book_id: { type: string }
-                  total: { type: integer, example: 5 }
+                  book_id:   { type: string }
+                  total:     { type: integer, example: 5 }
                   available: { type: integer, example: 3 }
                   byStatus:
                     type: object
@@ -500,34 +576,45 @@ paths:
                       LOST: 0
                       IN_REPAIR: 1
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
   /physical-items/book/{bookId}/available:
     get:
-      tags: [Physical items]
-      summary: List available physical copies of a book (Authenticated)
+      tags: [Physical Items]
+      summary: Listar ejemplares disponibles de un libro
+      description: Devuelve solo los ejemplares con estado `AVAILABLE`.
       security:
         - bearerAuth: []
       parameters:
-        - { name: bookId, in: path, required: true, schema: { type: string } }
+        - name: bookId
+          in: path
+          required: true
+          schema: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
       responses:
         '200':
-          description: Available physical items
+          description: Lista de ejemplares disponibles
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/PhysicalItem' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
   /physical-items/{id}/status:
+    parameters:
+      - { $ref: '#/components/parameters/MongoId' }
     patch:
-      tags: [Physical items]
-      summary: Change the status of a physical item (Admin)
+      tags: [Physical Items]
+      summary: Cambiar estado de un ejemplar
       description: |
-        `LOANED` cannot be assigned manually (it is managed by loans).
-        Responds 409 if the item is on loan.
-      parameters:
-        - { $ref: '#/components/parameters/MongoId' }
+        Solo se puede asignar `AVAILABLE`, `LOST` o `IN_REPAIR`.
+        El estado `LOANED` lo gestiona el módulo de préstamos automáticamente.
+        Devuelve `409` si el ejemplar está actualmente prestado.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -539,119 +626,175 @@ paths:
                 status:
                   type: string
                   enum: [AVAILABLE, LOST, IN_REPAIR]
+                  example: IN_REPAIR
       responses:
         '200':
-          description: Physical item updated
+          description: Ejemplar actualizado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/PhysicalItem' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+  # ── LOANS ─────────────────────────────────
   /loans:
     post:
       tags: [Loans]
-      summary: Register a loan (Admin)
-      description: Fails with 409 if the physical item is not AVAILABLE.
+      summary: Registrar préstamo
+      description: |
+        Falla con `409` si el ejemplar físico no está en estado `AVAILABLE`.
+        La fecha de devolución (`dueDate`) la calcula el sistema automáticamente.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/CreateLoan' }
+            example:
+              user_id: 67052b3773fa6065cc7f1e10
+              physical_item_id: 665f1c2e8a1b2c3d4e5f6a7c
       responses:
         '201':
-          description: Loan created
+          description: Préstamo creado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Loan' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
     get:
       tags: [Loans]
-      summary: List all loans (Admin)
+      summary: Listar todos los préstamos
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: List of loans
+          description: Lista de préstamos
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Loan' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
   /loans/me:
     get:
       tags: [Loans]
-      summary: Loans of the authenticated user (Authenticated)
+      summary: Préstamos del usuario autenticado
       description: |
-        Accessible to `STUDENT` and `ADMIN`. Returns the caller's own loans,
-        most recent first, with the physical item and its book populated.
+        Accesible tanto a `STUDENT` como a `ADMIN`. Devuelve los préstamos propios
+        del llamante, del más reciente al más antiguo, con el ejemplar físico y su
+        libro populados.
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: List of loans
+          description: Préstamos propios
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/LoanWithDetails' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+
   /loans/{id}:
     parameters:
       - { $ref: '#/components/parameters/MongoId' }
     get:
       tags: [Loans]
-      summary: Loan details (Admin)
+      summary: Detalle de un préstamo
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Loan
+          description: Préstamo encontrado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Loan' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
     patch:
       tags: [Loans]
-      summary: Reassign the user or physical item of an active loan (Admin)
+      summary: Actualizar fecha de devolución de un préstamo
+      description: |
+        Solo se puede modificar el campo `dueDate` de un préstamo activo.
+        Reasignar usuario o ejemplar rompería la consistencia del stock.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/UpdateLoan' }
+            example:
+              dueDate: '2026-12-31T00:00:00.000Z'
       responses:
         '200':
-          description: Loan updated
+          description: Préstamo actualizado
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Loan' }
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
     delete:
       tags: [Loans]
-      summary: Register the return of the book (Admin)
-      description: Closes the loan (`status=RETURNED`) and frees the physical item.
+      summary: Registrar devolución (cerrar préstamo)
+      description: |
+        Cierra el préstamo (`status → RETURNED`), asigna `returnDate` y libera el
+        ejemplar físico (`status → AVAILABLE`).
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Loan returned
+          description: Devolución registrada
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Message' }
+              example:
+                message: Book returned successfully
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+# ─────────────────────────────────────────────
+#  COMPONENTS
+# ─────────────────────────────────────────────
 components:
+
+  # ── SECURITY ──────────────────────────────
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ── REUSABLE PARAMETERS ───────────────────
   parameters:
     MongoId:
       name: id
       in: path
       required: true
+      description: ID de MongoDB (24 caracteres hexadecimales)
       schema: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+
+  # ── REUSABLE RESPONSES ────────────────────
   responses:
     BadRequest:
-      description: Invalid data or id
+      description: Datos inválidos o ID incorrecto
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -660,7 +803,7 @@ components:
             message: Validation failed
             error: Bad Request
     Unauthorized:
-      description: Missing or invalid authentication token
+      description: Token ausente o inválido
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -669,7 +812,7 @@ components:
             message: Unauthorized
             error: Unauthorized
     Forbidden:
-      description: Authenticated but without sufficient role permissions
+      description: Autenticado pero sin el rol requerido
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -678,25 +821,25 @@ components:
             message: 'This action requires one of the following roles: ADMIN'
             error: Forbidden
     NotFound:
-      description: Resource not found
+      description: Recurso no encontrado
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
           example:
             statusCode: 404
-            message: User with id 665f1c2e8a1b2c3d4e5f6a7b not found
+            message: Resource with id 665f1c2e8a1b2c3d4e5f6a7b not found
             error: Not Found
     Conflict:
-      description: Conflict with the current state of the resource
+      description: Conflicto con el estado actual del recurso
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
           example:
             statusCode: 409
-            message: Conflict with the current state of the resource
+            message: The physical item is not available
             error: Conflict
     TooManyRequests:
-      description: Rate limit exceeded
+      description: Límite de peticiones superado
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }
@@ -704,52 +847,56 @@ components:
             statusCode: 429
             message: ThrottlerException Too Many Requests
             error: Too Many Requests
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+
+  # ── SCHEMAS ───────────────────────────────
   schemas:
+
     Error:
       type: object
       properties:
-        statusCode: { type: integer }
-        message: {}
-        error: { type: string }
+        statusCode: { type: integer, example: 400 }
+        message:    {}
+        error:      { type: string, example: Bad Request }
+
     Message:
       type: object
       properties:
         message: { type: string }
+
+    # ·· Auth ······························
     CreateUser:
       type: object
       required: [full_name, email, password]
       properties:
-        full_name: { type: string, example: Juan Perez }
-        email: { type: string, format: email, example: juan.perez@library.dev }
-        password: { type: string, minLength: 8, maxLength: 32, example: Password123 }
+        full_name: { type: string, example: Juan Pérez }
+        email:     { type: string, format: email, example: juan.perez@library.dev }
+        password:  { type: string, minLength: 8, maxLength: 32, example: Password123 }
+
     UpdateUser:
       type: object
-      description: Same as CreateUser, but all fields are optional.
+      description: Todos los campos son opcionales.
       properties:
-        full_name: { type: string, example: Juan Perez Gomez }
-        email: { type: string, format: email, example: juan.perez@library.dev }
-        password: { type: string, minLength: 8, maxLength: 32, example: NewPassword123 }
+        full_name: { type: string, example: Juan Pérez Gómez }
+        email:     { type: string, format: email }
+        password:  { type: string, minLength: 8, maxLength: 32 }
         status:
           type: string
           enum: [ACTIVE, BLOCKED]
-          example: ACTIVE
+          example: BLOCKED
+
     LoginUser:
       type: object
       required: [email, password]
       properties:
-        email: { type: string, format: email, example: juan.perez@library.dev }
+        email:    { type: string, format: email, example: juan.perez@library.dev }
         password: { type: string, example: Password123 }
+
     User:
       type: object
       properties:
-        _id: { type: string, example: 67052b3773fa6065cc7f1e10 }
-        full_name: { type: string, example: Juan Perez }
-        email: { type: string, format: email, example: juan.perez@library.dev }
+        _id:       { type: string, example: 67052b3773fa6065cc7f1e10 }
+        full_name: { type: string, example: Juan Pérez }
+        email:     { type: string, format: email, example: juan.perez@library.dev }
         role:
           type: string
           enum: [STUDENT, ADMIN]
@@ -760,60 +907,67 @@ components:
           example: ACTIVE
         createdAt: { type: string, format: date-time, example: '2026-10-08T14:26:02.295Z' }
         updatedAt: { type: string, format: date-time, example: '2026-10-08T14:26:02.295Z' }
+
     Profile:
       type: object
       properties:
-        id: { type: string, example: 67052b3773fa6065cc7f1e10 }
-        email: { type: string, format: email, example: juan.perez@library.dev }
+        id:        { type: string, example: 67052b3773fa6065cc7f1e10 }
+        full_name: { type: string, example: Juan Pérez }
+        email:     { type: string, format: email, example: juan.perez@library.dev }
         role:
           type: string
           enum: [STUDENT, ADMIN]
           example: STUDENT
-        full_name: { type: string, example: Juan Perez }
+
     AuthResponse:
       type: object
       properties:
-        user: { $ref: '#/components/schemas/User' }
+        user:  { $ref: '#/components/schemas/User' }
         token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example.token
+
+    # ·· Books ·····························
     CreateBook:
       type: object
       required: [isbn, title, author, publisher, categories]
       properties:
-        isbn: { type: string, example: '9780132350884' }
-        title: { type: string, example: Clean Code }
-        author: { type: string, example: Robert C. Martin }
-        publisher: { type: string, example: Prentice Hall }
+        isbn:            { type: string, example: '9780132350884' }
+        title:           { type: string, example: Clean Code }
+        author:          { type: string, example: Robert C. Martin }
+        publisher:       { type: string, example: Prentice Hall }
         publicationYear: { type: integer, example: 2008 }
         categories:
           type: array
           items: { type: string }
-          example: [Programming]
-        coverUrl: { type: string, format: uri }
-        description: { type: string }
+          example: [Programming, Software Engineering]
+        coverUrl:    { type: string, format: uri, description: URL de la imagen de portada }
+        description: { type: string, example: A handbook of agile software craftsmanship. }
+
     UpdateBook:
       type: object
-      description: Same as CreateBook, but all fields are optional.
+      description: Igual que CreateBook pero todos los campos son opcionales.
       properties:
-        isbn: { type: string }
-        title: { type: string }
-        author: { type: string }
-        publisher: { type: string }
+        isbn:            { type: string }
+        title:           { type: string }
+        author:          { type: string }
+        publisher:       { type: string }
         publicationYear: { type: integer }
         categories:
           type: array
           items: { type: string }
-        coverUrl: { type: string, format: uri }
+        coverUrl:    { type: string, format: uri }
         description: { type: string }
+
     Book:
       allOf:
         - $ref: '#/components/schemas/CreateBook'
         - type: object
           properties:
-            _id: { type: string }
+            _id:       { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
             createdAt: { type: string, format: date-time }
             updatedAt: { type: string, format: date-time }
+
     BookInventoryItem:
       allOf:
         - $ref: '#/components/schemas/Book'
@@ -822,72 +976,106 @@ components:
             stock:
               type: object
               properties:
-                total: { type: integer, example: 5 }
+                total:     { type: integer, example: 5 }
                 available: { type: integer, example: 3 }
             digital:
               type: boolean
-              description: Whether the book has a linked digital resource.
+              description: Si el libro tiene un recurso digital asociado
               example: true
+
+    # ·· Digital Resources ·················
     DigitalResource:
       type: object
       properties:
-        _id: { type: string }
-        book_id: { type: string }
-        fileUrl: { type: string, description: Internal name of the stored file }
-        format: { type: string, enum: [PDF, EPUB] }
-        sizeMegabytes: { type: number }
-        onlineReadOnly: { type: boolean }
+        _id:           { type: string, example: 665f1c2e8a1b2c3d4e5f6b8c }
+        book_id:       { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+        fileUrl:       { type: string, description: Nombre interno del archivo almacenado }
+        format:
+          type: string
+          enum: [PDF, EPUB]
+          example: PDF
+        sizeMegabytes: { type: number, example: 4.2 }
+        onlineReadOnly:
+          type: boolean
+          example: true
+          description: Si es true el archivo se sirve inline; si es false se descarga.
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    # ·· Physical Items ····················
+    CreatePhysicalItem:
+      type: object
+      required: [book_id, barcode]
+      properties:
+        book_id:       { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+        barcode:       { type: string, example: LIB-000123 }
+        shelfLocation: { type: string, example: A-3 }
+
     PhysicalItem:
       type: object
       properties:
-        _id: { type: string }
-        book_id: { type: string }
-        barcode: { type: string }
-        shelfLocation: { type: string }
+        _id:           { type: string, example: 665f1c2e8a1b2c3d4e5f6a7c }
+        book_id:       { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+        barcode:       { type: string, example: LIB-000123 }
+        shelfLocation: { type: string, example: A-3 }
         status:
           type: string
           enum: [AVAILABLE, LOANED, LOST, IN_REPAIR]
+          example: AVAILABLE
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    # ·· Loans ·····························
     CreateLoan:
       type: object
       required: [user_id, physical_item_id]
       properties:
-        user_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7b }
+        user_id:          { type: string, example: 67052b3773fa6065cc7f1e10 }
         physical_item_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7c }
+
     UpdateLoan:
       type: object
-      description: Same as CreateLoan, but all fields are optional.
+      description: Solo se puede modificar la fecha de devolución esperada.
       properties:
-        user_id: { type: string }
-        physical_item_id: { type: string }
+        dueDate:
+          type: string
+          format: date-time
+          example: '2026-12-31T00:00:00.000Z'
+
     Loan:
       type: object
       properties:
-        _id: { type: string }
-        user_id: { type: string }
-        physical_item_id: { type: string }
-        loanDate: { type: string, format: date-time }
-        dueDate: { type: string, format: date-time }
-        returnDate: { type: string, format: date-time, nullable: true }
+        _id:              { type: string, example: 665f1c2e8a1b2c3d4e5f6a9d }
+        user_id:          { type: string, example: 67052b3773fa6065cc7f1e10 }
+        physical_item_id: { type: string, example: 665f1c2e8a1b2c3d4e5f6a7c }
+        loanDate:   { type: string, format: date-time }
+        dueDate:    { type: string, format: date-time }
+        returnDate:
+          type: string
+          format: date-time
+          nullable: true
         status:
           type: string
           enum: [ACTIVE, RETURNED, OVERDUE]
+          example: ACTIVE
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+
     LoanWithDetails:
       allOf:
         - $ref: '#/components/schemas/Loan'
         - type: object
-          description: Same as Loan, but `physical_item_id` is populated.
+          description: Igual que Loan pero con `physical_item_id` populado.
           properties:
             physical_item_id:
               type: object
               properties:
-                _id: { type: string }
+                _id:     { type: string }
                 barcode: { type: string }
                 book_id:
                   type: object
                   properties:
-                    _id: { type: string }
-                    title: { type: string }
+                    _id:    { type: string }
+                    title:  { type: string }
                     author: { type: string }
-                    isbn: { type: string }
+                    isbn:   { type: string }
