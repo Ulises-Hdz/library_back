@@ -16,10 +16,14 @@ import {
 } from 'src/common/dto/book.dto';
 import { PhysicalItem, ItemStatus } from 'src/models/physical-resource.model';
 import { DigitalResource } from 'src/models/digital-resource.model';
-import { unlink } from 'fs/promises';
+import { access, mkdir, rename, unlink } from 'fs/promises';
+import { constants, createReadStream } from 'fs';
 import { join } from 'path';
+import { randomUUID } from 'crypto';
 import { UPLOAD_DIR } from '../resource-digital/resource-digital.service';
 import type { UploadedFileData } from 'src/common/interfaces/uploaded-file.interface';
+
+export const COVER_UPLOAD_DIR = join(process.cwd(), 'uploads', 'covers');
 
 @Injectable()
 export class BookService {
@@ -152,6 +156,7 @@ export class BookService {
       if (digital) {
         await unlink(join(UPLOAD_DIR, digital.fileUrl)).catch(() => undefined);
       }
+      await unlink(join(COVER_UPLOAD_DIR, `${id}.webp`)).catch(() => undefined);
       await book.deleteOne();
       return { message: `Book "${book.title}" deleted successfully.` };
     } catch (error) {
@@ -164,7 +169,7 @@ export class BookService {
     }
   }
 
-  async upload(bookId: string, file: UploadedFileData) {
+  async upload(bookId: string, file: UploadedFileData, baseUrl: string) {
     if (!file) {
       throw new BadRequestException('The file is required.');
     }
@@ -187,47 +192,51 @@ export class BookService {
       throw new NotFoundException(`Book with id "${bookId}" not found.`);
     }
 
-    const { mkdir, writeFile } = await import('fs/promises');
-    const { join } = await import('path');
-    const { randomUUID } = await import('crypto');
     const sharp = await import('sharp');
 
-    const uploadsDir = join(process.cwd(), 'uploads', 'covers');
-    await mkdir(uploadsDir, { recursive: true });
+    await mkdir(COVER_UPLOAD_DIR, { recursive: true });
 
-    const filename = `${randomUUID()}.webp`;
-    const filepath = join(uploadsDir, filename);
+    const filename = `${bookId}.webp`;
+    const filepath = join(COVER_UPLOAD_DIR, filename);
+    const temporaryPath = join(COVER_UPLOAD_DIR, `${randomUUID()}.tmp.webp`);
 
     try {
-      await sharp.default(file.buffer)
+      await sharp
+        .default(file.buffer)
         .resize(300, 450, {
           fit: 'cover',
           position: 'center',
         })
         .webp({ quality: 80 })
-        .toFile(filepath);
-
-      const coverUrl = `/covers/${filename}`;
-      book.coverUrl = coverUrl;
-      await book.save();
-
-      return {
-        success: true,
-        message: 'Cover uploaded successfully',
-        data: {
-          coverUrl,
-          book_id: bookId,
-          uploadedAt: new Date().toISOString(),
-          size: file.size,
-          mime: file.mimetype,
-        },
-      };
+        .toFile(temporaryPath);
     } catch (error) {
-      const { unlink } = await import('fs/promises');
-      await unlink(filepath).catch(() => undefined);
+      await unlink(temporaryPath).catch(() => undefined);
       console.error('Error processing cover:', error);
       throw new BadRequestException('Error processing image.');
     }
+
+    await rename(temporaryPath, filepath).catch(async (error) => {
+      await unlink(temporaryPath).catch(() => undefined);
+      throw error;
+    });
+
+    const coverUrl = `${baseUrl.replace(/\/+$/, '')}/api/books/${bookId}/cover`;
+    book.coverUrl = coverUrl;
+    await book.save();
+
+    return { coverUrl };
+  }
+
+  async getCover(bookId: string) {
+    const filepath = join(COVER_UPLOAD_DIR, `${bookId}.webp`);
+
+    try {
+      await access(filepath, constants.R_OK);
+    } catch {
+      throw new NotFoundException(`Book "${bookId}" has no cover.`);
+    }
+
+    return createReadStream(filepath);
   }
 
   private handleDBError(error: unknown): never {

@@ -29,6 +29,7 @@ API Backend para el sistema de biblioteca desarrollada con **NestJS** y **MongoD
    Variables contenidas en `.env`:
    ```env
    PORT=3000
+   PUBLIC_BASE_URL=http://localhost:3000
    MONGO_URI=mongodb://localhost:27017/database
    JWT_SECRET=una_clave_secreta_larga_y_segura
    JWT_EXPIRES_IN=2h
@@ -83,6 +84,7 @@ Si prefieres correr `npm run start:dev` directamente en tu máquina física y us
    Asegúrate de que `MONGO_URI` apunte a `localhost`:
    ```env
    PORT=3000
+   PUBLIC_BASE_URL=http://localhost:3000
    MONGO_URI=mongodb://localhost:27017/database
    JWT_SECRET=una_clave_secreta_larga_y_segura
    JWT_EXPIRES_IN=2h
