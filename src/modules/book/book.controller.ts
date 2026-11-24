@@ -13,8 +13,13 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  Req,
+  Res,
+  StreamableFile,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Request, Response } from 'express';
 import { memoryStorage } from 'multer';
 import { BookService } from './book.service';
 import {
@@ -27,6 +32,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/models/user.model';
+import { Public } from 'src/common/decorators/public.decorator';
 import type { UploadedFileData } from 'src/common/interfaces/uploaded-file.interface';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -34,7 +40,10 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 @Controller('books')
 @UseGuards(JwtAuthGuard)
 export class BookController {
-  constructor(private readonly bookService: BookService) {}
+  constructor(
+    private readonly bookService: BookService,
+    private readonly configService: ConfigService,
+  ) {}
 
   // POST /api/books
   // Admin
@@ -67,6 +76,20 @@ export class BookController {
   @Get(':id')
   findOne(@Param('id', ParseMongoIdPipe) id: string) {
     return this.bookService.findOne(id);
+  }
+
+  // GET /api/books/:id/cover
+  // Public
+  @Public()
+  @Get(':id/cover')
+  async getCover(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const stream = await this.bookService.getCover(id);
+    res.type('image/webp');
+    res.set('Cache-Control', 'public, max-age=3600');
+    return new StreamableFile(stream);
   }
 
   // PATCH /api/books/:id
@@ -106,10 +129,18 @@ export class BookController {
   uploadCover(
     @Param('id', ParseMongoIdPipe) id: string,
     @UploadedFile() file: UploadedFileData,
+    @Req() req: Request,
   ) {
     if (!file) {
       throw new BadRequestException('The file is required.');
     }
-    return this.bookService.upload(id, file);
+    const configuredBaseUrl = this.configService.get<string>('baseUrl');
+    const host = req.get('host');
+    if (!configuredBaseUrl && !host) {
+      throw new BadRequestException('The request host is required.');
+    }
+    const baseUrl =
+      configuredBaseUrl?.replace(/\/+$/, '') ?? `${req.protocol}://${host}`;
+    return this.bookService.upload(id, file, baseUrl);
   }
 }

@@ -418,10 +418,30 @@ paths:
           description: Portada subida correctamente
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Book' }
+              schema:
+                type: object
+                properties:
+                  coverUrl:
+                    type: string
+                    format: uri
+                required: [coverUrl]
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    get:
+      tags: [Books]
+      summary: Obtener portada de un libro
+      description: Devuelve la portada procesada en formato WebP. No requiere autenticación.
+      responses:
+        '200':
+          description: Imagen de portada
+          content:
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '400': { $ref: '#/components/responses/BadRequest' }
         '404': { $ref: '#/components/responses/NotFound' }
 
   # ── DIGITAL RESOURCES ─────────────────────
